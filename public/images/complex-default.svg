@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="700" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0A1B4D"/>
+      <stop offset="1" stop-color="#0E4D2E"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="700" rx="24" fill="url(#bg)"/>
+  <rect x="100" y="70" width="1000" height="560" rx="18" stroke="#A7F3D0" stroke-opacity="0.7" stroke-width="8"/>
+  <line x1="600" y1="70" x2="600" y2="630" stroke="#A7F3D0" stroke-opacity="0.7" stroke-width="8"/>
+  <circle cx="600" cy="350" r="78" stroke="#A7F3D0" stroke-opacity="0.7" stroke-width="8"/>
+  <rect x="100" y="215" width="110" height="270" stroke="#A7F3D0" stroke-opacity="0.7" stroke-width="8"/>
+  <rect x="990" y="215" width="110" height="270" stroke="#A7F3D0" stroke-opacity="0.7" stroke-width="8"/>
+  <text x="70" y="665" fill="#E2E8F0" font-family="Segoe UI, Arial, sans-serif" font-size="44" font-weight="700">Cancha Alquiler</text>
+  <text x="70" y="610" fill="#A7F3D0" font-family="Segoe UI, Arial, sans-serif" font-size="30" font-weight="600">Foto referencial del complejo</text>
+</svg>
