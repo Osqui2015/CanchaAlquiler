@@ -16,6 +16,7 @@ use App\Models\ServiceCatalog;
 use App\Models\Sport;
 use App\Models\TournamentTeam;
 use App\Models\User;
+use App\Models\RecurringReservation;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -24,10 +25,12 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Services\AvailabilitySearchService;
+use Carbon\Carbon;
 
 class AdminCanchaPanelController extends Controller
 {
-  public function index(Request $request): Response
+  public function index(Request $request, AvailabilitySearchService $availabilitySearchService): Response
   {
     $user = $request->user();
     $selectedDate = $request->query('date', now()->toDateString());
@@ -49,7 +52,7 @@ class AdminCanchaPanelController extends Controller
       ->orderBy('name')
       ->get();
 
-    $complexesPayload = $complexes->map(function (Complex $complex) use ($selectedDate): array {
+    $complexesPayload = $complexes->map(function (Complex $complex) use ($selectedDate, $availabilitySearchService): array {
       $monthStart = now()->startOfMonth();
       $monthEnd = now()->endOfMonth();
 
@@ -65,6 +68,53 @@ class AdminCanchaPanelController extends Controller
         ->orderBy('start_at')
         ->get();
 
+      // Merge with Recurring Reservations for this day
+      $dayOfWeek = Carbon::parse($selectedDate)->dayOfWeekIso;
+      $recurringForDay = RecurringReservation::query()
+          ->with('court:id,name')
+          ->where('complex_id', $complex->id)
+          ->where('is_active', true)
+          ->where('day_of_week', $dayOfWeek)
+          ->where(function($q) use ($selectedDate) {
+              $q->whereNull('start_date')->orWhere('start_date', '<=', $selectedDate);
+          })
+          ->where(function($q) use ($selectedDate) {
+              $q->whereNull('end_date')->orWhere('end_date', '>=', $selectedDate);
+          })
+          ->get();
+
+      $mappedRecurring = $recurringForDay->map(function($rr) use ($selectedDate) {
+          return [
+              'id' => 'recurring-' . $rr->id, // Virtual ID
+              'is_recurring' => true,
+              'code' => 'FIJO',
+              'status' => 'confirmada',
+              'is_paid' => $rr->is_paid,
+              'start_at' => $selectedDate . ' ' . $rr->start_time,
+              'end_at' => $selectedDate . ' ' . $rr->end_time,
+              'client_name' => $rr->client_name,
+              'client_phone' => $rr->client_phone,
+              'court' => [
+                  'name' => $rr->court->name,
+              ],
+              'client' => [
+                  'name' => $rr->client_name,
+                  'email' => '',
+                  'phone' => $rr->client_phone,
+              ]
+          ];
+      });
+
+      $dailyReservations = $dailyReservations->toBase()->concat($mappedRecurring)->sortBy('start_at');
+
+      // Get availability for the selected date
+      $availability = $availabilitySearchService->searchForComplex($complex, [
+          'sport_id' => null,
+          'date' => $selectedDate,
+          'start_time' => '00:00',
+          'end_time' => null,
+      ]);
+
       return [
         'id' => $complex->id,
         'name' => $complex->name,
@@ -72,6 +122,8 @@ class AdminCanchaPanelController extends Controller
         'address_line' => $complex->address_line,
         'description' => $complex->description,
         'phone_contact' => $complex->phone_contact,
+        'instagram_url' => $complex->instagram_url,
+        'facebook_url' => $complex->facebook_url,
         'status' => $complex->status,
         'booking_enabled' => $complex->booking_enabled,
         'city' => $complex->city,
@@ -82,8 +134,12 @@ class AdminCanchaPanelController extends Controller
         'stats' => [
           'income_month' => (float) (clone $confirmedQuery)->sum('total_amount'),
           'reservations_confirmed_month' => (clone $confirmedQuery)->count(),
+          'most_rented_day' => $this->calculateMostRentedDay($confirmedQuery),
+          'most_rented_time' => $this->calculateMostRentedTime($confirmedQuery),
         ],
+        'monthly_reserved_dates' => (clone $confirmedQuery)->get(['start_at'])->map(fn($r) => $r->start_at->toDateString())->unique()->values()->all(),
         'daily_reservations' => $dailyReservations,
+        'availability' => $availability,
         'tournaments' => $complex->tournaments
           ->sortByDesc('start_date')
           ->map(function (ComplexTournament $tournament): array {
@@ -148,6 +204,7 @@ class AdminCanchaPanelController extends Controller
           })
           ->values()
           ->all(),
+        'recurring_reservations' => $complex->recurringReservations()->with('court')->get(),
       ];
     })->values();
 
@@ -162,50 +219,47 @@ class AdminCanchaPanelController extends Controller
     ]);
   }
 
-  public function storeComplex(Request $request): RedirectResponse
+  public function updateComplex(Request $request, Complex $complex): RedirectResponse
   {
+    $this->authorizeComplex($request->user(), $complex);
+
     $validated = $request->validate([
-      'city_id' => ['required', 'integer', 'exists:cities,id'],
-      'name' => ['required', 'string', 'max:150'],
-      'address_line' => ['required', 'string', 'max:255'],
+      'name' => ['sometimes', 'string', 'max:150'],
+      'address_line' => ['sometimes', 'string', 'max:255'],
       'description' => ['nullable', 'string'],
       'phone_contact' => ['nullable', 'string', 'max:40'],
+      'instagram_url' => ['nullable', 'string', 'max:255'],
+      'facebook_url' => ['nullable', 'string', 'max:255'],
       'latitude' => ['nullable', 'numeric', 'between:-90,90'],
       'longitude' => ['nullable', 'numeric', 'between:-180,180'],
       'service_ids' => ['nullable', 'array'],
       'service_ids.*' => ['integer', 'exists:services_catalog,id'],
     ]);
 
-    DB::transaction(function () use ($request, $validated): void {
-      $complex = Complex::create([
-        'city_id' => $validated['city_id'],
-        'name' => $validated['name'],
-        'slug' => $this->buildUniqueSlug($validated['name']),
-        'address_line' => $validated['address_line'],
-        'description' => $validated['description'] ?? null,
-        'phone_contact' => $validated['phone_contact'] ?? null,
-        'latitude' => $validated['latitude'] ?? null,
-        'longitude' => $validated['longitude'] ?? null,
-        'status' => Complex::STATUS_ACTIVO,
-        'booking_enabled' => true,
+    DB::transaction(function () use ($complex, $validated): void {
+      if (isset($validated['name']) && $validated['name'] !== $complex->name) {
+        $validated['slug'] = $this->buildUniqueSlug($validated['name'], $complex->id);
+      }
+
+      $complex->update([
+        'name' => $validated['name'] ?? $complex->name,
+        'slug' => $validated['slug'] ?? $complex->slug,
+        'address_line' => $validated['address_line'] ?? $complex->address_line,
+        'description' => array_key_exists('description', $validated) ? $validated['description'] : $complex->description,
+        'phone_contact' => array_key_exists('phone_contact', $validated) ? $validated['phone_contact'] : $complex->phone_contact,
+        'instagram_url' => array_key_exists('instagram_url', $validated) ? $validated['instagram_url'] : $complex->instagram_url,
+        'facebook_url' => array_key_exists('facebook_url', $validated) ? $validated['facebook_url'] : $complex->facebook_url,
+        'latitude' => array_key_exists('latitude', $validated) ? $validated['latitude'] : $complex->latitude,
+        'longitude' => array_key_exists('longitude', $validated) ? $validated['longitude'] : $complex->longitude,
       ]);
 
-      $complex->services()->sync($validated['service_ids'] ?? []);
-
-      ComplexUserAssignment::updateOrCreate(
-        [
-          'complex_id' => $complex->id,
-          'user_id' => $request->user()->id,
-        ],
-        [
-          'assignment_type' => ComplexUserAssignment::TYPE_OWNER,
-          'is_primary' => true,
-        ],
-      );
+      if (array_key_exists('service_ids', $validated)) {
+        $complex->services()->sync($validated['service_ids'] ?? []);
+      }
     });
 
     return redirect()->route('panel.admincancha')
-      ->with('success', 'Complejo creado correctamente.');
+      ->with('success', 'Complejo actualizado correctamente.');
   }
 
   public function storeCourt(Request $request, Complex $complex): RedirectResponse
@@ -219,6 +273,10 @@ class AdminCanchaPanelController extends Controller
       'players_capacity' => ['required', 'integer', 'min:2', 'max:50'],
       'slot_duration_minutes' => ['required', 'integer', 'min:30', 'max:240'],
       'base_price' => ['required', 'numeric', 'min:0'],
+      'price_30_min' => ['nullable', 'numeric', 'min:0'],
+      'price_60_min' => ['nullable', 'numeric', 'min:0'],
+      'price_90_min' => ['nullable', 'numeric', 'min:0'],
+      'price_120_min' => ['nullable', 'numeric', 'min:0'],
     ]);
 
     $complex->courts()->create([
@@ -241,6 +299,10 @@ class AdminCanchaPanelController extends Controller
       'players_capacity' => ['sometimes', 'integer', 'min:2', 'max:50'],
       'slot_duration_minutes' => ['sometimes', 'integer', 'min:30', 'max:240'],
       'base_price' => ['sometimes', 'numeric', 'min:0'],
+      'price_30_min' => ['nullable', 'numeric', 'min:0'],
+      'price_60_min' => ['nullable', 'numeric', 'min:0'],
+      'price_90_min' => ['nullable', 'numeric', 'min:0'],
+      'price_120_min' => ['nullable', 'numeric', 'min:0'],
       'status' => ['sometimes', 'in:activa,inactiva,mantenimiento'],
     ]);
 
@@ -448,5 +510,416 @@ class AdminCanchaPanelController extends Controller
     }
 
     return $slug;
+  }
+
+  private function calculateMostRentedDay($query): string
+  {
+    $reservations = (clone $query)->get(['start_at']);
+    if ($reservations->isEmpty()) return 'N/A';
+    
+    $byDay = $reservations->countBy(fn($r) => $r->start_at->isoWeekday());
+    $topDay = $byDay->sortDesc()->keys()->first();
+    $names = [1=>'Lunes', 2=>'Martes', 3=>'Miercoles', 4=>'Jueves', 5=>'Viernes', 6=>'Sabado', 7=>'Domingo'];
+    return $names[$topDay] ?? 'N/A';
+  }
+
+  private function calculateMostRentedTime($query): string
+  {
+    $reservations = (clone $query)->get(['start_at']);
+    if ($reservations->isEmpty()) return 'N/A';
+    
+    $byTime = $reservations->countBy(fn($r) => $r->start_at->format('H:i'));
+    return $byTime->sortDesc()->keys()->first() ?? 'N/A';
+  }
+
+  public function getCalendarDayDetails(Request $request, Complex $complex, string $date, AvailabilitySearchService $availabilitySearchService)
+  {
+    $this->authorizeComplex($request->user(), $complex);
+    
+    $filters = [
+      'sport_id' => null,
+      'date' => $date,
+      'start_time' => '00:00',
+      'end_time' => null,
+    ];
+
+    $availability = $availabilitySearchService->searchForComplex($complex, $filters);
+    
+    $dateStart = Carbon::parse($date)->startOfDay();
+    $dateEnd = Carbon::parse($date)->endOfDay();
+
+    $reservations = Reservation::query()
+      ->with(['client:id,name,phone,email', 'court:id,name'])
+      ->where('complex_id', $complex->id)
+      ->whereBetween('start_at', [$dateStart, $dateEnd])
+      ->whereIn('status', [Reservation::STATUS_CONFIRMADA, Reservation::STATUS_PENDIENTE_PAGO])
+      ->get()
+      ->map(function ($res) {
+          return [
+              'id' => $res->id,
+              'court_id' => $res->court_id,
+              'status' => $res->status,
+              'start_time' => $res->start_at->format('H:i'),
+              'end_time' => $res->end_at->format('H:i'),
+              'client_name' => $res->client_name ?? $res->client?->name ?? 'Walk-in',
+              'client_phone' => $res->client_phone ?? $res->client?->phone ?? '',
+              'is_local' => !empty($res->client_name),
+          ];
+      });
+
+    // Merge with Recurring Reservations
+    $dayOfWeek = Carbon::parse($date)->dayOfWeekIso;
+    $recurringForDay = RecurringReservation::query()
+        ->where('complex_id', $complex->id)
+        ->where('is_active', true)
+        ->where('day_of_week', $dayOfWeek)
+        ->where(function($q) use ($date) {
+            $q->whereNull('start_date')->orWhere('start_date', '<=', $date);
+        })
+        ->where(function($q) use ($date) {
+            $q->whereNull('end_date')->orWhere('end_date', '>=', $date);
+        })
+        ->get()
+        ->map(function ($rr) {
+            return [
+                'id' => 'recurring-' . $rr->id,
+                'court_id' => $rr->court_id,
+                'status' => 'confirmada',
+                'start_time' => substr($rr->start_time, 0, 5),
+                'end_time' => substr($rr->end_time, 0, 5),
+                'client_name' => $rr->client_name,
+                'client_phone' => $rr->client_phone,
+                'is_local' => true,
+                'is_recurring' => true,
+            ];
+        });
+
+    $reservations = $reservations->concat($recurringForDay);
+
+    return response()->json([
+      'availability' => $availability,
+      'reservations' => $reservations
+    ]);
+  }
+
+  public function storeFastReservation(Request $request, Complex $complex)
+  {
+    $this->authorizeComplex($request->user(), $complex);
+
+    $validated = $request->validate([
+      'court_id' => ['required', 'integer', 'exists:courts,id'],
+      'date' => ['required', 'date_format:Y-m-d'],
+      'start_time' => ['required', 'date_format:H:i'],
+      'end_time' => ['nullable', 'date_format:H:i', 'after:start_time'],
+      'client_name' => ['required', 'string', 'max:100'],
+      'client_phone' => ['nullable', 'string', 'max:50'],
+      'client_user_id' => ['nullable', 'integer', 'exists:users,id'],
+      'is_paid' => ['nullable', 'boolean'],
+    ]);
+
+    $court = Court::query()->where('complex_id', $complex->id)->findOrFail($validated['court_id']);
+
+    $startAt = Carbon::createFromFormat('Y-m-d H:i', $validated['date'] . ' ' . $validated['start_time']);
+    $endAt = !empty($validated['end_time']) 
+        ? Carbon::createFromFormat('Y-m-d H:i', $validated['date'] . ' ' . $validated['end_time']) 
+        : $startAt->copy()->addMinutes($court->slot_duration_minutes);
+
+    // Verify it doesn't overlap
+    $overlaps = Reservation::query()
+        ->where('court_id', $court->id)
+        ->whereIn('status', [Reservation::STATUS_CONFIRMADA, Reservation::STATUS_PENDIENTE_PAGO])
+        ->where(function($q) use ($startAt, $endAt) {
+            $q->where('start_at', '<', $endAt)
+              ->where('end_at', '>', $startAt);
+        })->exists();
+
+    if ($overlaps) {
+        throw ValidationException::withMessages(['time' => 'El horario ya se encuentra ocupado.']);
+    }
+
+    // Client assignment / Auto-creation logic
+    $clientId = $validated['client_user_id'] ?? null;
+    
+    if (!$clientId) {
+        // Find existing client or create new one
+        $existingClient = User::query()
+            ->where('role', User::ROLE_CLIENTE)
+            ->where('name', $validated['client_name'])
+            ->first();
+
+        if ($existingClient) {
+            $clientId = $existingClient->id;
+        } else {
+            // Create user automatically
+            $clientEmail = 'cliente.' . time() . rand(10,99) . '@canchaalquiler_auto.com';
+            if ($validated['client_phone'] && preg_match('/^[0-9]+$/', preg_replace('/[^0-9]/', '', $validated['client_phone']))) {
+                $uniquePhoneEmail = preg_replace('/[^0-9]/', '', $validated['client_phone']) . '@canchaalquiler_auto.com';
+                if (!User::where('email', $uniquePhoneEmail)->exists()) {
+                    $clientEmail = $uniquePhoneEmail;
+                }
+            }
+
+            $newUser = User::create([
+                'name' => $validated['client_name'],
+                'email' => $clientEmail,
+                'phone' => $validated['client_phone'],
+                'password' => \Illuminate\Support\Facades\Hash::make('password_auto_' . rand(1000,9999)),
+                'role' => User::ROLE_CLIENTE,
+                'status' => User::STATUS_ACTIVO,
+            ]);
+            $clientId = $newUser->id;
+        }
+    }
+
+    $reservation = Reservation::create([
+        'code' => 'RES-ADM-' . strtoupper(Str::random(6)),
+        'client_user_id' => $clientId, 
+        'complex_id' => $complex->id,
+        'court_id' => $court->id,
+        'sport_id' => $court->sport_id,
+        'start_at' => $startAt,
+        'end_at' => $endAt,
+        'total_amount' => 0, 
+        'deposit_amount' => 0,
+        'currency' => 'ARS',
+        'status' => Reservation::STATUS_CONFIRMADA,
+        'is_paid' => $validated['is_paid'] ?? false,
+        'client_name' => $validated['client_name'],
+        'client_phone' => $validated['client_phone'] ?? null,
+    ]);
+
+    \App\Models\ReservationStatusHistory::create([
+        'reservation_id' => $reservation->id,
+        'from_status' => null,
+        'to_status' => Reservation::STATUS_CONFIRMADA,
+        'changed_by_user_id' => $request->user()->id,
+        'reason' => 'Reserva local rapida creada por administrador.',
+        'created_at' => now(),
+    ]);
+
+    return redirect()->back()->with('success', 'Reserva local creada correctamente.');
+  }
+
+  public function getAdvancedReports(Request $request, Complex $complex)
+  {
+      $this->authorizeComplex($request->user(), $complex);
+
+      $validated = $request->validate([
+          'start_date' => ['required', 'date_format:Y-m-d'],
+          'end_date' => ['required', 'date_format:Y-m-d', 'after_or_equal:start_date'],
+          'court_id' => ['nullable', 'integer', 'exists:courts,id'],
+      ]);
+
+      $startAt = \Carbon\Carbon::parse($validated['start_date'])->startOfDay();
+      $endAt = \Carbon\Carbon::parse($validated['end_date'])->endOfDay();
+
+      $query = \App\Models\Reservation::query()
+          ->where('complex_id', $complex->id)
+          ->whereBetween('start_at', [$startAt, $endAt])
+          ->where('status', \App\Models\Reservation::STATUS_CONFIRMADA)
+          ->when($validated['court_id'] ?? null, fn($q, $cid) => $q->where('court_id', $cid));
+
+      $reservations = $query->with(['client', 'court'])->get();
+
+      $totalRevenue = $reservations->sum('total_amount');
+      $totalReservations = $reservations->count();
+
+      // Daily Revenue Trend
+      $dailyRevenue = $reservations->groupBy(fn($r) => $r->start_at->format('Y-m-d'))
+          ->map(fn($group, $date) => ['date' => $date, 'amount' => $group->sum('total_amount')])
+          ->values();
+
+      // Hourly Distribution (Peak Hours)
+      $hourlyDistribution = $reservations->groupBy(fn($r) => $r->start_at->format('H:00'))
+          ->map(fn($group, $hour) => ['hour' => $hour, 'count' => $group->count()])
+          ->sortBy('hour')
+          ->values();
+
+      // Client Retention (New vs Recurring)
+      $clientReservationCounts = \App\Models\Reservation::where('complex_id', $complex->id)
+          ->whereNotNull('client_user_id')
+          ->groupBy('client_user_id')
+          ->selectRaw('client_user_id, count(*) as count')
+          ->get()
+          ->pluck('count', 'client_user_id');
+
+      $clientRetention = [
+          'new' => $reservations->whereNotNull('client_user_id')->filter(fn($r) => ($clientReservationCounts[$r->client_user_id] ?? 0) <= 1)->count(),
+          'returning' => $reservations->whereNotNull('client_user_id')->filter(fn($r) => ($clientReservationCounts[$r->client_user_id] ?? 0) > 1)->count(),
+      ];
+
+      $topClientRecords = $reservations->whereNotNull('client_user_id')->countBy('client_user_id')->sortDesc();
+      $topClientUserId = $topClientRecords->keys()->first();
+      $topClient = null;
+      if ($topClientUserId) {
+          $client = $reservations->firstWhere('client_user_id', $topClientUserId)->client;
+          $topClient = $client ? [
+              'name' => $client->name,
+              'reservations_count' => $topClientRecords->first(),
+          ] : null;
+      }
+
+      $topCourtRecords = $reservations->countBy('court_id')->sortDesc();
+      $topCourtId = $topCourtRecords->keys()->first();
+      $topCourt = null;
+      if ($topCourtId) {
+          $court = $reservations->firstWhere('court_id', $topCourtId)->court;
+          $topCourt = $court ? [
+              'name' => $court->name,
+              'reservations_count' => $topCourtRecords->first(),
+          ] : null;
+      }
+
+      return response()->json([
+          'total_revenue' => $totalRevenue,
+          'total_reservations' => $totalReservations,
+          'daily_revenue' => $dailyRevenue,
+          'hourly_distribution' => $hourlyDistribution,
+          'client_retention' => $clientRetention,
+          'top_client' => $topClient,
+          'top_court' => $topCourt,
+      ]);
+  }
+
+  public function cancelReservation(Request $request, Complex $complex, \App\Models\Reservation $reservation)
+  {
+      $this->authorizeComplex($request->user(), $complex);
+
+      if ($reservation->complex_id !== $complex->id) {
+          abort(403);
+      }
+
+      $reservation->update([
+          'status' => \App\Models\Reservation::STATUS_CANCELADA,
+          'canceled_at' => now(),
+          'canceled_by_user_id' => $request->user()->id,
+          'cancel_reason' => 'Cancelado por el administrador.'
+      ]);
+
+      return redirect()->back()->with('success', 'Reserva cancelada exitosamente.');
+  }
+
+  public function storeRecurringReservation(Request $request, Complex $complex)
+  {
+      $this->authorizeComplex($request->user(), $complex);
+      
+      $validated = $request->validate([
+          'court_id' => 'required|exists:courts,id',
+          'day_of_week' => 'required|integer|between:1,7',
+          'start_time' => 'required|date_format:H:i',
+          'end_time' => 'required|date_format:H:i|after:start_time',
+          'client_name' => 'required|string|max:100',
+          'client_phone' => 'nullable|string|max:50',
+          'client_user_id' => 'nullable|exists:users,id',
+          'is_paid' => 'nullable|boolean',
+          'notes' => 'nullable|string',
+      ]);
+      
+      // Check for overlaps with other recurring reservations
+      $overlaps = $complex->recurringReservations()
+          ->where('court_id', $validated['court_id'])
+          ->where('day_of_week', $validated['day_of_week'])
+          ->where('is_active', true)
+          ->where(function($q) use ($validated) {
+              $q->where('start_time', '<', $validated['end_time'])
+                ->where('end_time', '>', $validated['start_time']);
+          })->exists();
+          
+      if ($overlaps) {
+          throw ValidationException::withMessages(['time' => 'Ya existe un turno fijo en ese horario.']);
+      }
+      
+      $complex->recurringReservations()->create($validated);
+      
+      return redirect()->back()->with('success', 'Turno fijo creado correctamente.');
+  }
+
+  public function destroyRecurringReservation(Request $request, Complex $complex, RecurringReservation $recurringReservation)
+  {
+      $this->authorizeComplex($request->user(), $complex);
+      
+      if ($recurringReservation->complex_id !== $complex->id) {
+          abort(403);
+      }
+      
+      $recurringReservation->delete();
+      
+      return redirect()->back()->with('success', 'Turno fijo eliminado correctamente.');
+  }
+
+  public function updateReservation(Request $request, Complex $complex, Reservation $reservation)
+  {
+      $this->authorizeComplex($request->user(), $complex);
+      if ($reservation->complex_id !== $complex->id) abort(403);
+
+      $validated = $request->validate([
+          'court_id' => ['required', 'integer', 'exists:courts,id'],
+          'date' => ['required', 'date_format:Y-m-d'],
+          'start_time' => ['required', 'date_format:H:i'],
+          'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
+          'client_name' => ['required', 'string', 'max:100'],
+          'client_phone' => ['nullable', 'string', 'max:50'],
+          'is_paid' => ['nullable', 'boolean'],
+      ]);
+
+      $startAt = Carbon::createFromFormat('Y-m-d H:i', $validated['date'] . ' ' . $validated['start_time']);
+      $endAt = Carbon::createFromFormat('Y-m-d H:i', $validated['date'] . ' ' . $validated['end_time']);
+
+      // Overlap check (excluding current reservation)
+      $overlaps = Reservation::query()
+          ->where('court_id', $validated['court_id'])
+          ->where('id', '!=', $reservation->id)
+          ->whereIn('status', [Reservation::STATUS_CONFIRMADA, Reservation::STATUS_PENDIENTE_PAGO])
+          ->where(function($q) use ($startAt, $endAt) {
+              $q->where('start_at', '<', $endAt)
+                ->where('end_at', '>', $startAt);
+          })->exists();
+
+      if ($overlaps) throw ValidationException::withMessages(['time' => 'El horario ya se encuentra ocupado.']);
+
+      $reservation->update([
+          'court_id' => $validated['court_id'],
+          'start_at' => $startAt,
+          'end_at' => $endAt,
+          'client_name' => $validated['client_name'],
+          'client_phone' => $validated['client_phone'],
+          'is_paid' => $validated['is_paid'] ?? false,
+      ]);
+
+      return redirect()->back()->with('success', 'Reserva actualizada correctamente.');
+  }
+
+  public function updateRecurringReservation(Request $request, Complex $complex, RecurringReservation $recurringReservation)
+  {
+      $this->authorizeComplex($request->user(), $complex);
+      if ($recurringReservation->complex_id !== $complex->id) abort(403);
+
+      $validated = $request->validate([
+          'court_id' => 'required|exists:courts,id',
+          'day_of_week' => 'required|integer|between:1,7',
+          'start_time' => 'required|date_format:H:i',
+          'end_time' => 'required|date_format:H:i|after:start_time',
+          'client_name' => 'required|string|max:100',
+          'client_phone' => 'nullable|string|max:50',
+          'is_paid' => 'nullable|boolean',
+          'notes' => 'nullable|string',
+      ]);
+
+      // Overlap check
+      $overlaps = $complex->recurringReservations()
+          ->where('id', '!=', $recurringReservation->id)
+          ->where('court_id', $validated['court_id'])
+          ->where('day_of_week', $validated['day_of_week'])
+          ->where('is_active', true)
+          ->where(function($q) use ($validated) {
+              $q->where('start_time', '<', $validated['end_time'])
+                ->where('end_time', '>', $validated['start_time']);
+          })->exists();
+          
+      if ($overlaps) throw ValidationException::withMessages(['time' => 'Ya existe un turno fijo en ese horario.']);
+
+      $recurringReservation->update($validated);
+
+      return redirect()->back()->with('success', 'Turno fijo actualizado correctamente.');
   }
 }

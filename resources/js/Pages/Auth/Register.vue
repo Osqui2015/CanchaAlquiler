@@ -18,24 +18,24 @@ function submit(): void {
 <template>
     <AppShell>
         <section
-            class="mx-auto w-full max-w-lg rounded-2xl border border-slate-800 bg-slate-900/60 p-6"
+            class="mx-auto w-full max-w-lg rounded-2xl border border-slate-200 dark:border-slate-800 transition-colors duration-300 bg-white/60 dark:bg-slate-900/60 transition-colors duration-300 p-6"
         >
-            <h1 class="text-2xl font-black text-emerald-300">Crear cuenta</h1>
-            <p class="mt-2 text-sm text-slate-400">
+            <h1 class="text-2xl font-black text-emerald-600 dark:text-emerald-300 transition-colors duration-300">Crear cuenta</h1>
+            <p class="mt-2 text-sm text-slate-500 dark:text-slate-400 transition-colors duration-300">
                 Registrate para poder reservar turnos online.
             </p>
 
             <form class="mt-6 grid gap-4" @submit.prevent="submit">
                 <div>
                     <label
-                        class="mb-1 block text-xs uppercase tracking-wide text-slate-400"
+                        class="mb-1 block text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400 transition-colors duration-300"
                         >Nombre completo</label
                     >
                     <input
                         v-model="form.name"
                         type="text"
                         required
-                        class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm outline-none focus:border-emerald-400"
+                        class="w-full rounded-lg border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-slate-50 dark:bg-slate-950 transition-colors duration-300 px-3 py-2 text-sm outline-none focus:border-emerald-400"
                     />
                     <p
                         v-if="form.errors.name"
@@ -48,14 +48,14 @@ function submit(): void {
                 <div class="grid gap-4 sm:grid-cols-2">
                     <div>
                         <label
-                            class="mb-1 block text-xs uppercase tracking-wide text-slate-400"
+                            class="mb-1 block text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400 transition-colors duration-300"
                             >Email</label
                         >
                         <input
                             v-model="form.email"
                             type="email"
                             required
-                            class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm outline-none focus:border-emerald-400"
+                            class="w-full rounded-lg border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-slate-50 dark:bg-slate-950 transition-colors duration-300 px-3 py-2 text-sm outline-none focus:border-emerald-400"
                         />
                         <p
                             v-if="form.errors.email"
@@ -66,13 +66,13 @@ function submit(): void {
                     </div>
                     <div>
                         <label
-                            class="mb-1 block text-xs uppercase tracking-wide text-slate-400"
+                            class="mb-1 block text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400 transition-colors duration-300"
                             >Telefono</label
                         >
                         <input
                             v-model="form.phone"
                             type="text"
-                            class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm outline-none focus:border-emerald-400"
+                            class="w-full rounded-lg border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-slate-50 dark:bg-slate-950 transition-colors duration-300 px-3 py-2 text-sm outline-none focus:border-emerald-400"
                         />
                         <p
                             v-if="form.errors.phone"
@@ -86,14 +86,14 @@ function submit(): void {
                 <div class="grid gap-4 sm:grid-cols-2">
                     <div>
                         <label
-                            class="mb-1 block text-xs uppercase tracking-wide text-slate-400"
+                            class="mb-1 block text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400 transition-colors duration-300"
                             >Contrasena</label
                         >
                         <input
                             v-model="form.password"
                             type="password"
                             required
-                            class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm outline-none focus:border-emerald-400"
+                            class="w-full rounded-lg border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-slate-50 dark:bg-slate-950 transition-colors duration-300 px-3 py-2 text-sm outline-none focus:border-emerald-400"
                         />
                         <p
                             v-if="form.errors.password"
@@ -104,14 +104,14 @@ function submit(): void {
                     </div>
                     <div>
                         <label
-                            class="mb-1 block text-xs uppercase tracking-wide text-slate-400"
+                            class="mb-1 block text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400 transition-colors duration-300"
                             >Confirmar</label
                         >
                         <input
                             v-model="form.password_confirmation"
                             type="password"
                             required
-                            class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm outline-none focus:border-emerald-400"
+                            class="w-full rounded-lg border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-slate-50 dark:bg-slate-950 transition-colors duration-300 px-3 py-2 text-sm outline-none focus:border-emerald-400"
                         />
                     </div>
                 </div>
@@ -125,11 +125,11 @@ function submit(): void {
                 </button>
             </form>
 
-            <p class="mt-4 text-sm text-slate-400">
+            <p class="mt-4 text-sm text-slate-500 dark:text-slate-400 transition-colors duration-300">
                 Ya tienes cuenta?
                 <Link
                     href="/login"
-                    class="font-semibold text-emerald-300 underline underline-offset-4"
+                    class="font-semibold text-emerald-600 dark:text-emerald-300 transition-colors duration-300 underline underline-offset-4"
                     >Iniciar sesion</Link
                 >
             </p>

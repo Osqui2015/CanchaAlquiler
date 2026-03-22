@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(CatalogSeeder::class);
         $this->call(DemoFootballSeeder::class);
+        $this->call(GalponSeeder::class);
 
         User::query()->updateOrCreate(
             ['email' => 'test@example.com'],

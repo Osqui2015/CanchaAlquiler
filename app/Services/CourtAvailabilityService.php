@@ -55,7 +55,8 @@ class CourtAvailabilityService
       return false;
     }
 
-    return $startAt->toDateString() === $endAt->toDateString();
+    // Allow range if it's within 24 hours (supports past-midnight turns)
+    return $startAt->diffInHours($endAt) <= 24;
   }
 
   private function isWithinComplexSchedule(Court $court, CarbonInterface $startAt, CarbonInterface $endAt): bool
@@ -103,6 +104,21 @@ class CourtAvailabilityService
   ): bool {
     $openAt = $startAt->copy()->setTimeFromTimeString($openTime);
     $closeAt = $startAt->copy()->setTimeFromTimeString($closeTime);
+
+    // Handle past-midnight closing
+    if ($closeAt->lessThanOrEqualTo($openAt)) {
+        if ($closeAt->hour < $openAt->hour || $closeAt->format('H:i') === '00:00') {
+            $closeAt->addDay();
+        } else {
+            return false;
+        }
+    }
+
+    // Also consider the case where startAt is actually after midnight but within the previous day's window
+    // (e.g. business hours 09:00 - 02:00, and startAt is 01:00 AM)
+    // However, the resolveCourtWindow already picks the correct day_of_week based on startAt.
+    // If startAt is 01:00 AM Saturday, resolveCourtWindow will check Saturday opening hours.
+    // This logic is simplified to assume we are checking the window of the calendar day 'startAt'.
 
     return $startAt->greaterThanOrEqualTo($openAt)
       && $endAt->lessThanOrEqualTo($closeAt);

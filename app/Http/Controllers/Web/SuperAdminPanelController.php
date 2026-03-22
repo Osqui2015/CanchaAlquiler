@@ -7,8 +7,11 @@ use App\Models\Complex;
 use App\Models\ComplexUserAssignment;
 use App\Models\Reservation;
 use App\Models\User;
+use App\Models\City;
+use App\Models\ServiceCatalog;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
@@ -52,6 +55,10 @@ class SuperAdminPanelController extends Controller
 
     return Inertia::render('SuperAdmin/Dashboard', [
       'dashboard' => $dashboard,
+      'catalogs' => [
+        'cities' => City::query()->with('province:id,name')->orderBy('name')->get(['id', 'name', 'province_id']),
+        'services' => ServiceCatalog::query()->where('is_active', true)->orderBy('name')->get(['id', 'name', 'slug', 'icon']),
+      ],
       'admins' => User::query()
         ->where('role', User::ROLE_ADMIN_CANCHA)
         ->with(['complexAssignments.complex:id,name,slug'])
@@ -158,5 +165,74 @@ class SuperAdminPanelController extends Controller
 
     return redirect()->route('panel.superadmin')
       ->with('success', 'Cliente actualizado correctamente.');
+  }
+
+  public function updateAdminStatus(Request $request, User $user): RedirectResponse
+  {
+    if ($user->role !== User::ROLE_ADMIN_CANCHA) {
+      abort(422, 'El usuario indicado no es AdminCancha.');
+    }
+
+    $validated = $request->validate([
+      'status' => ['required', 'in:activo,suspendido'],
+    ]);
+
+    $user->update(['status' => $validated['status']]);
+
+    return redirect()->route('panel.superadmin')
+      ->with('success', 'AdminCancha actualizado correctamente.');
+  }
+
+  private function buildUniqueSlug(string $name, ?int $ignoreComplexId = null): string
+  {
+    $baseSlug = Str::slug($name);
+    $slug = $baseSlug;
+    $counter = 1;
+
+    while (Complex::query()
+      ->when($ignoreComplexId, fn($query) => $query->whereKeyNot($ignoreComplexId))
+      ->where('slug', $slug)
+      ->exists()
+    ) {
+      $counter++;
+      $slug = $baseSlug . '-' . $counter;
+    }
+
+    return $slug;
+  }
+
+  public function storeComplex(Request $request): RedirectResponse
+  {
+    $validated = $request->validate([
+      'city_id' => ['required', 'integer', 'exists:cities,id'],
+      'name' => ['required', 'string', 'max:150'],
+      'address_line' => ['required', 'string', 'max:255'],
+      'description' => ['nullable', 'string'],
+      'phone_contact' => ['nullable', 'string', 'max:40'],
+      'latitude' => ['nullable', 'numeric', 'between:-90,90'],
+      'longitude' => ['nullable', 'numeric', 'between:-180,180'],
+      'service_ids' => ['nullable', 'array'],
+      'service_ids.*' => ['integer', 'exists:services_catalog,id'],
+    ]);
+
+    DB::transaction(function () use ($validated): void {
+      $complex = Complex::create([
+        'city_id' => $validated['city_id'],
+        'name' => $validated['name'],
+        'slug' => $this->buildUniqueSlug($validated['name']),
+        'address_line' => $validated['address_line'],
+        'description' => $validated['description'] ?? null,
+        'phone_contact' => $validated['phone_contact'] ?? null,
+        'latitude' => $validated['latitude'] ?? null,
+        'longitude' => $validated['longitude'] ?? null,
+        'status' => Complex::STATUS_ACTIVO,
+        'booking_enabled' => true,
+      ]);
+
+      $complex->services()->sync($validated['service_ids'] ?? []);
+    });
+
+    return redirect()->route('panel.superadmin')
+      ->with('success', 'Complejo creado correctamente.');
   }
 }

@@ -33,10 +33,13 @@ class Reservation extends Model
     'deposit_amount',
     'currency',
     'status',
+    'is_paid',
     'hold_expires_at',
     'canceled_at',
     'canceled_by_user_id',
     'cancel_reason',
+    'client_name',
+    'client_phone',
   ];
 
   protected function casts(): array
@@ -48,6 +51,7 @@ class Reservation extends Model
       'canceled_at' => 'datetime',
       'total_amount' => 'decimal:2',
       'deposit_amount' => 'decimal:2',
+      'is_paid' => 'boolean',
     ];
   }
 

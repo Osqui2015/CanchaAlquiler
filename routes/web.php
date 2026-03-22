@@ -60,9 +60,9 @@ Route::middleware('auth')->group(function (): void {
         ->middleware('role:admin_cancha')
         ->name('panel.admincancha');
 
-    Route::post('/panel/admin-cancha/complejos', [AdminCanchaPanelController::class, 'storeComplex'])
+    Route::put('/panel/admin-cancha/complejos/{complex}', [AdminCanchaPanelController::class, 'updateComplex'])
         ->middleware('role:admin_cancha')
-        ->name('panel.admincancha.complejos.store');
+        ->name('panel.admincancha.complejos.update');
 
     Route::post('/panel/admin-cancha/complejos/{complex}/canchas', [AdminCanchaPanelController::class, 'storeCourt'])
         ->middleware('role:admin_cancha')
@@ -92,6 +92,50 @@ Route::middleware('auth')->group(function (): void {
         ->middleware('role:admin_cancha')
         ->name('panel.admincancha.convocatorias.store');
 
+    Route::get('/panel/admin-cancha/complejos/{complex}/calendario/{date}', [AdminCanchaPanelController::class, 'getCalendarDayDetails'])
+        ->middleware('role:admin_cancha')
+        ->name('panel.admincancha.calendario.dia');
+
+    Route::post('/panel/admin-cancha/complejos/{complex}/reservas-rapidas', [AdminCanchaPanelController::class, 'storeFastReservation'])
+        ->middleware('role:admin_cancha')
+        ->name('panel.admincancha.reservas-rapidas.store');
+
+    Route::post('/panel/admin-cancha/complejos/{complex}/reservas/{reservation}/cancelar', [AdminCanchaPanelController::class, 'cancelReservation'])
+        ->middleware('role:admin_cancha')
+        ->name('panel.admincancha.reservas.cancelar');
+        
+    Route::put('/panel/admin-cancha/complejos/{complex}/reservas/{reservation}', [AdminCanchaPanelController::class, 'updateReservation'])
+        ->middleware('role:admin_cancha')
+        ->name('panel.admincancha.reservas.update');
+
+    Route::post('/panel/admin-cancha/complejos/{complex}/turnos-fijos', [AdminCanchaPanelController::class, 'storeRecurringReservation'])
+        ->middleware('role:admin_cancha')
+        ->name('panel.admincancha.turnos-fijos.store');
+
+    Route::delete('/panel/admin-cancha/complejos/{complex}/turnos-fijos/{recurringReservation}', [AdminCanchaPanelController::class, 'destroyRecurringReservation'])
+        ->middleware('role:admin_cancha')
+        ->name('panel.admincancha.turnos-fijos.destroy');
+
+    Route::put('/panel/admin-cancha/complejos/{complex}/turnos-fijos/{recurringReservation}', [AdminCanchaPanelController::class, 'updateRecurringReservation'])
+        ->middleware('role:admin_cancha')
+        ->name('panel.admincancha.turnos-fijos.update');
+
+    Route::get('/panel/admin-cancha/complejos/{complex}/reportes', [AdminCanchaPanelController::class, 'getAdvancedReports'])
+        ->middleware('role:admin_cancha')
+        ->name('panel.admincancha.reportes');
+
+    Route::get('/panel/admin-cancha/clientes', [\App\Http\Controllers\Web\AdminCanchaClientController::class, 'index'])
+        ->middleware('role:admin_cancha')
+        ->name('panel.admincancha.clientes.index');
+        
+    Route::post('/panel/admin-cancha/clientes', [\App\Http\Controllers\Web\AdminCanchaClientController::class, 'store'])
+        ->middleware('role:admin_cancha')
+        ->name('panel.admincancha.clientes.store');
+        
+    Route::put('/panel/admin-cancha/clientes/{client}', [\App\Http\Controllers\Web\AdminCanchaClientController::class, 'update'])
+        ->middleware('role:admin_cancha')
+        ->name('panel.admincancha.clientes.update');
+
     Route::get('/panel/super-admin', [SuperAdminPanelController::class, 'index'])
         ->middleware('role:super_admin')
         ->name('panel.superadmin');
@@ -99,6 +143,14 @@ Route::middleware('auth')->group(function (): void {
     Route::post('/panel/super-admin/admin-cancha', [SuperAdminPanelController::class, 'storeAdmin'])
         ->middleware('role:super_admin')
         ->name('panel.superadmin.admins.store');
+
+    Route::post('/panel/super-admin/complejos', [SuperAdminPanelController::class, 'storeComplex'])
+        ->middleware('role:super_admin')
+        ->name('panel.superadmin.complexes.store');
+
+    Route::put('/panel/super-admin/admin-cancha/{user}', [SuperAdminPanelController::class, 'updateAdminStatus'])
+        ->middleware('role:super_admin')
+        ->name('panel.superadmin.admins.update');
 
     Route::post('/panel/super-admin/admin-cancha/{user}/asignar-complejo', [SuperAdminPanelController::class, 'assignComplex'])
         ->middleware('role:super_admin')

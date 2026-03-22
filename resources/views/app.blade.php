@@ -10,7 +10,14 @@
     @inertiaHead
 </head>
 
-<body class="bg-slate-950 text-slate-50 antialiased">
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-50 antialiased transition-colors duration-300">
+    <script>
+        if (localStorage.theme === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
     @inertia
 </body>
 

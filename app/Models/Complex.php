@@ -27,6 +27,8 @@ class Complex extends Model
     'longitude',
     'description',
     'phone_contact',
+    'instagram_url',
+    'facebook_url',
     'status',
     'booking_enabled',
   ];
@@ -94,5 +96,10 @@ class Complex extends Model
   public function teamBoardPosts(): HasMany
   {
     return $this->hasMany(ComplexTeamBoardPost::class);
+  }
+
+  public function recurringReservations(): HasMany
+  {
+    return $this->hasMany(RecurringReservation::class);
   }
 }

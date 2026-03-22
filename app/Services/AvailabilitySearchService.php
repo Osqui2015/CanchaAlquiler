@@ -174,6 +174,10 @@ class AvailabilitySearchService
       'players_capacity' => $court->players_capacity,
       'slot_duration_minutes' => $court->slot_duration_minutes,
       'base_price' => (float) $court->base_price,
+      'price_30_min' => (float) $court->price_30_min,
+      'price_60_min' => (float) $court->price_60_min,
+      'price_90_min' => (float) $court->price_90_min,
+      'price_120_min' => (float) $court->price_120_min,
       'available_slots' => $availableSlots,
       'sport' => [
         'id' => $court->sport->id,
@@ -219,11 +223,48 @@ class AvailabilitySearchService
     $slotDurationMinutes = max(15, (int) $court->slot_duration_minutes);
     $windowStart = $window['open_at'];
     $windowEnd = $window['close_at'];
+
+    // Load all conflicts (reservations and blocks) for this court in the window
+    $reservations = $court->reservations()
+      ->whereIn('status', [\App\Models\Reservation::STATUS_PENDIENTE_PAGO, \App\Models\Reservation::STATUS_CONFIRMADA])
+      ->where('start_at', '<', $windowEnd)
+      ->where('end_at', '>', $windowStart)
+      ->get(['start_at', 'end_at']);
+
+    $blocks = $court->blocks()
+      ->where('start_at', '<', $windowEnd)
+      ->where('end_at', '>', $windowStart)
+      ->get(['start_at', 'end_at']);
+
+    // Load recurring reservations for the same day of week
+    $recurringReservations = \App\Models\RecurringReservation::query()
+        ->where('court_id', $court->id)
+        ->where('is_active', true)
+        ->where('day_of_week', $selectedStartAt->dayOfWeekIso)
+        ->where(function($q) use ($selectedStartAt) {
+            $q->whereNull('start_date')->orWhere('start_date', '<=', $selectedStartAt->toDateString());
+        })
+        ->where(function($q) use ($selectedStartAt) {
+            $q->whereNull('end_date')->orWhere('end_date', '>=', $selectedStartAt->toDateString());
+        })
+        ->get(['start_time', 'end_time']);
+
+    $recurringConflicts = $recurringReservations->map(function($rr) use ($selectedStartAt) {
+        return (object)[
+            'start_at' => \Carbon\Carbon::parse($selectedStartAt->toDateString() . ' ' . $rr->start_time),
+            'end_at' => \Carbon\Carbon::parse($selectedStartAt->toDateString() . ' ' . $rr->end_time),
+        ];
+    });
+
+    $conflicts = $reservations->concat($blocks)->concat($recurringConflicts)->sortBy('start_at');
+
     $slotStart = $selectedStartAt->greaterThan($windowStart)
       ? $selectedStartAt->copy()
       : $windowStart->copy();
 
+    // Initial alignment to boundary (only for the very first step)
     $slotStart = $this->alignToSlotBoundary($slotStart, $windowStart, $slotDurationMinutes);
+
     $availableSlots = [];
 
     while (true) {
@@ -233,18 +274,33 @@ class AvailabilitySearchService
         break;
       }
 
-      if ($this->courtAvailabilityService->isCourtAvailable($court, $slotStart, $slotEnd)) {
+      // Find first conflict overlapping [$slotStart, $slotEnd]
+      $activeConflict = $conflicts->first(function ($c) use ($slotStart, $slotEnd) {
+        return $c->start_at->lt($slotEnd) && $c->end_at->gt($slotStart);
+      });
+
+      if (!$activeConflict) {
         $availableSlots[] = [
           'start_time' => $slotStart->format('H:i'),
           'end_time' => $slotEnd->format('H:i'),
           'label' => $slotStart->format('H:i') . ' - ' . $slotEnd->format('H:i'),
         ];
+        $slotStart = $slotEnd->copy();
+      } else {
+        // Jump to end of conflict and continue. 
+        // We don't align again after a jump, as requested ("next starts at 11:00" exactly)
+        $nextStartAt = $activeConflict->end_at->copy();
+        
+        // Prevent infinite loop if conflict end is not progressing
+        if ($nextStartAt->lte($slotStart)) {
+            $slotStart->addMinutes(1); // Force progress
+        } else {
+            $slotStart = $nextStartAt;
+        }
       }
 
-      $slotStart = $slotStart->addMinutes($slotDurationMinutes);
-
-      // Safety cap to avoid infinite loops on malformed data.
-      if (count($availableSlots) > 64) {
+      // Safety cap to avoid infinite loops
+      if (count($availableSlots) > 128) {
         break;
       }
     }
@@ -301,7 +357,11 @@ class AvailabilitySearchService
     $closeAt = Carbon::parse($targetDate->toDateString() . ' ' . $closeTime);
 
     if ($closeAt->lessThanOrEqualTo($openAt)) {
-      return null;
+      if ($closeAt->hour < $openAt->hour || $closeAt->format('H:i') === '00:00') {
+        $closeAt->addDay();
+      } else {
+        return null;
+      }
     }
 
     return [

@@ -25,6 +25,10 @@ class Court extends Model
     'players_capacity',
     'slot_duration_minutes',
     'base_price',
+    'price_30_min',
+    'price_60_min',
+    'price_90_min',
+    'price_120_min',
     'status',
   ];
 
@@ -32,6 +36,10 @@ class Court extends Model
   {
     return [
       'base_price' => 'decimal:2',
+      'price_30_min' => 'decimal:2',
+      'price_60_min' => 'decimal:2',
+      'price_90_min' => 'decimal:2',
+      'price_120_min' => 'decimal:2',
     ];
   }
 

@@ -227,19 +227,19 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
 <template>
     <AppShell>
         <section
-            class="rounded-2xl border border-slate-800 bg-slate-900/60 p-6"
+            class="rounded-2xl border border-slate-200 dark:border-slate-800 transition-colors duration-300 bg-white/60 dark:bg-slate-900/60 transition-colors duration-300 p-6"
         >
             <div class="flex flex-wrap items-start justify-between gap-4">
                 <div>
                     <p
-                        class="text-xs uppercase tracking-[0.25em] text-emerald-300"
+                        class="text-xs uppercase tracking-[0.25em] text-emerald-600 dark:text-emerald-300 transition-colors duration-300"
                     >
                         Perfil del complejo
                     </p>
                     <h1 class="mt-2 text-3xl font-black text-emerald-200">
                         {{ props.complex.name }}
                     </h1>
-                    <p class="mt-2 text-sm text-slate-300">
+                    <p class="mt-2 text-sm text-slate-600 dark:text-slate-300 transition-colors duration-300">
                         {{ props.complex.address }} · {{ props.complex.city }} ·
                         {{ props.complex.province }}
                     </p>
@@ -247,7 +247,7 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
 
                 <Link
                     href="/"
-                    class="rounded-lg border border-slate-700 px-4 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-900"
+                    class="rounded-lg border border-slate-300 dark:border-slate-700 transition-colors duration-300 px-4 py-2 text-xs font-semibold text-slate-800 dark:text-slate-200 transition-colors duration-300 hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors duration-300"
                 >
                     Volver al buscador
                 </Link>
@@ -255,32 +255,32 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
 
             <div class="mt-4 grid gap-3 md:grid-cols-3">
                 <div
-                    class="rounded-xl border border-slate-800 bg-slate-950/50 p-4"
+                    class="rounded-xl border border-slate-200 dark:border-slate-800 transition-colors duration-300 bg-slate-950/50 p-4"
                 >
-                    <p class="text-xs uppercase tracking-wide text-slate-400">
+                    <p class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400 transition-colors duration-300">
                         Canchas
                     </p>
-                    <p class="mt-1 text-2xl font-black text-emerald-300">
+                    <p class="mt-1 text-2xl font-black text-emerald-600 dark:text-emerald-300 transition-colors duration-300">
                         {{ props.summary.total_courts }}
                     </p>
                 </div>
                 <div
-                    class="rounded-xl border border-slate-800 bg-slate-950/50 p-4"
+                    class="rounded-xl border border-slate-200 dark:border-slate-800 transition-colors duration-300 bg-slate-950/50 p-4"
                 >
-                    <p class="text-xs uppercase tracking-wide text-slate-400">
+                    <p class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400 transition-colors duration-300">
                         En vista
                     </p>
-                    <p class="mt-1 text-2xl font-black text-slate-100">
+                    <p class="mt-1 text-2xl font-black text-slate-900 dark:text-slate-100 transition-colors duration-300">
                         {{ props.summary.displayed_courts }}
                     </p>
                 </div>
                 <div
-                    class="rounded-xl border border-slate-800 bg-slate-950/50 p-4"
+                    class="rounded-xl border border-slate-200 dark:border-slate-800 transition-colors duration-300 bg-slate-950/50 p-4"
                 >
-                    <p class="text-xs uppercase tracking-wide text-slate-400">
+                    <p class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400 transition-colors duration-300">
                         Con horarios libres
                     </p>
-                    <p class="mt-1 text-2xl font-black text-emerald-300">
+                    <p class="mt-1 text-2xl font-black text-emerald-600 dark:text-emerald-300 transition-colors duration-300">
                         {{ props.summary.available_courts }}
                     </p>
                 </div>
@@ -290,7 +290,7 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
                 <span
                     v-for="sport in props.summary.sports"
                     :key="sport.id"
-                    class="rounded-md border border-emerald-300/30 bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-200"
+                    class="rounded-md border border-emerald-500/30 dark:border-emerald-300/30 transition-colors duration-300 bg-emerald-100 dark:bg-emerald-400/10 transition-colors duration-300 px-3 py-1 text-xs font-semibold text-emerald-200"
                 >
                     {{ sport.name }}
                 </span>
@@ -298,7 +298,7 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
         </section>
 
         <section class="mt-6 grid gap-4 lg:grid-cols-3">
-            <div class="overflow-hidden rounded-xl border border-slate-800">
+            <div class="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 transition-colors duration-300">
                 <img
                     :src="props.complex.photo_url"
                     :alt="`Foto referencial de ${props.complex.name}`"
@@ -306,14 +306,14 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
                 />
             </div>
 
-            <div class="rounded-xl border border-slate-800 p-4 lg:col-span-2">
+            <div class="rounded-xl border border-slate-200 dark:border-slate-800 transition-colors duration-300 p-4 lg:col-span-2">
                 <p
                     v-if="props.complex.description"
-                    class="text-sm text-slate-300"
+                    class="text-sm text-slate-600 dark:text-slate-300 transition-colors duration-300"
                 >
                     {{ props.complex.description }}
                 </p>
-                <p class="mt-1 text-xs text-slate-400">
+                <p class="mt-1 text-xs text-slate-500 dark:text-slate-400 transition-colors duration-300">
                     Contacto:
                     {{ props.complex.phone_contact || "No informado" }}
                 </p>
@@ -321,7 +321,7 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
                 <iframe
                     v-if="props.complex.map_embed_url"
                     :src="props.complex.map_embed_url"
-                    class="mt-3 h-56 w-full rounded-lg border border-slate-700"
+                    class="mt-3 h-56 w-full rounded-lg border border-slate-300 dark:border-slate-700 transition-colors duration-300"
                     loading="lazy"
                     referrerpolicy="no-referrer-when-downgrade"
                 />
@@ -330,7 +330,7 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
                     :href="props.complex.map_url"
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="mt-3 inline-block rounded-md border border-slate-600 px-3 py-1 text-xs font-semibold text-slate-200 hover:bg-slate-900"
+                    class="mt-3 inline-block rounded-md border border-slate-400 dark:border-slate-600 transition-colors duration-300 px-3 py-1 text-xs font-semibold text-slate-800 dark:text-slate-200 transition-colors duration-300 hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors duration-300"
                 >
                     Ver ubicacion en mapa
                 </a>
@@ -338,7 +338,7 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
         </section>
 
         <section
-            class="mt-6 rounded-2xl border border-slate-800 bg-slate-900/60 p-4"
+            class="mt-6 rounded-2xl border border-slate-200 dark:border-slate-800 transition-colors duration-300 bg-white/60 dark:bg-slate-900/60 transition-colors duration-300 p-4"
         >
             <div class="flex flex-wrap gap-2">
                 <button
@@ -349,7 +349,7 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
                     :class="
                         activeTab === tab.key
                             ? 'bg-emerald-400 text-slate-950'
-                            : 'border border-slate-700 text-slate-300 hover:bg-slate-900'
+                            : 'border border-slate-300 dark:border-slate-700 transition-colors duration-300 text-slate-600 dark:text-slate-300 transition-colors duration-300 hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors duration-300'
                     "
                     @click="activeTab = tab.key"
                 >
@@ -360,12 +360,12 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
 
         <section
             v-if="activeTab === 'disponibilidad'"
-            class="mt-6 rounded-2xl border border-slate-800 bg-slate-900/60 p-6"
+            class="mt-6 rounded-2xl border border-slate-200 dark:border-slate-800 transition-colors duration-300 bg-white/60 dark:bg-slate-900/60 transition-colors duration-300 p-6"
         >
-            <h2 class="text-lg font-bold text-emerald-300">
+            <h2 class="text-lg font-bold text-emerald-600 dark:text-emerald-300 transition-colors duration-300">
                 Ver disponibilidad
             </h2>
-            <p class="mt-1 text-sm text-slate-300">
+            <p class="mt-1 text-sm text-slate-600 dark:text-slate-300 transition-colors duration-300">
                 Selecciona fecha y hora para ver los turnos que estan libres en
                 este complejo.
             </p>
@@ -376,7 +376,7 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
             >
                 <select
                     v-model="filterForm.sport_id"
-                    class="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm"
+                    class="rounded-lg border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-slate-50 dark:bg-slate-950 transition-colors duration-300 px-3 py-2 text-sm"
                 >
                     <option value="">Todos los deportes</option>
                     <option
@@ -391,7 +391,7 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
                 <input
                     v-model="filterForm.date"
                     type="date"
-                    class="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm"
+                    class="rounded-lg border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-slate-50 dark:bg-slate-950 transition-colors duration-300 px-3 py-2 text-sm"
                     required
                 />
 
@@ -399,7 +399,7 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
                     v-model="filterForm.start_time"
                     type="time"
                     step="60"
-                    class="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm"
+                    class="rounded-lg border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-slate-50 dark:bg-slate-950 transition-colors duration-300 px-3 py-2 text-sm"
                     required
                 />
 
@@ -407,7 +407,7 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
                     v-model="filterForm.end_time"
                     type="time"
                     step="60"
-                    class="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm"
+                    class="rounded-lg border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-slate-50 dark:bg-slate-950 transition-colors duration-300 px-3 py-2 text-sm"
                     placeholder="Opcional"
                 />
 
@@ -419,7 +419,7 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
                 </button>
             </form>
 
-            <p class="mt-2 text-xs text-slate-400">
+            <p class="mt-2 text-xs text-slate-500 dark:text-slate-400 transition-colors duration-300">
                 Si dejas hora fin vacia, se listan turnos libres desde la hora
                 de inicio en adelante.
             </p>
@@ -428,7 +428,7 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
         <section v-if="activeTab === 'disponibilidad'" class="mt-6 space-y-4">
             <div
                 v-if="props.courts.length === 0"
-                class="rounded-2xl border border-dashed border-slate-700 p-6 text-sm text-slate-300"
+                class="rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 transition-colors duration-300 p-6 text-sm text-slate-600 dark:text-slate-300 transition-colors duration-300"
             >
                 No hay canchas para el deporte seleccionado en este complejo.
             </div>
@@ -436,36 +436,36 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
             <article
                 v-for="court in props.courts"
                 :key="court.id"
-                class="rounded-2xl border border-slate-800 bg-slate-900/60 p-5"
+                class="rounded-2xl border border-slate-200 dark:border-slate-800 transition-colors duration-300 bg-white/60 dark:bg-slate-900/60 transition-colors duration-300 p-5"
             >
                 <div class="flex flex-wrap items-start justify-between gap-3">
                     <div>
                         <h3 class="text-lg font-bold text-emerald-200">
                             {{ court.name }}
                         </h3>
-                        <p class="text-xs text-slate-400">
+                        <p class="text-xs text-slate-500 dark:text-slate-400 transition-colors duration-300">
                             {{ court.sport.name }} ·
                             {{ court.surface_type.replaceAll("_", " ") }}
                         </p>
                         <p
                             v-if="footballFormatLabel(court)"
-                            class="mt-1 text-xs font-semibold text-emerald-300"
+                            class="mt-1 text-xs font-semibold text-emerald-600 dark:text-emerald-300 transition-colors duration-300"
                         >
                             {{ footballFormatLabel(court) }}
                         </p>
                     </div>
-                    <span class="text-sm font-bold text-emerald-300">
+                    <span class="text-sm font-bold text-emerald-600 dark:text-emerald-300 transition-colors duration-300">
                         {{ formatPrice(court.base_price) }}
                     </span>
                 </div>
 
-                <p class="mt-2 text-xs text-slate-400">
+                <p class="mt-2 text-xs text-slate-500 dark:text-slate-400 transition-colors duration-300">
                     {{ court.players_capacity }} jugadores · turnos de
                     {{ court.slot_duration_minutes }} min
                 </p>
 
                 <div class="mt-3">
-                    <p class="text-xs font-semibold text-slate-300">
+                    <p class="text-xs font-semibold text-slate-600 dark:text-slate-300 transition-colors duration-300">
                         <template v-if="hasExactRange"
                             >Disponibilidad del rango seleccionado</template
                         >
@@ -485,7 +485,7 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
                             <button
                                 v-if="authUser && authUser.role === 'cliente'"
                                 type="button"
-                                class="rounded-md bg-emerald-400/20 px-3 py-1 text-xs font-semibold text-emerald-200 hover:bg-emerald-400/30"
+                                class="rounded-md bg-emerald-200 dark:bg-emerald-400/20 transition-colors duration-300 px-3 py-1 text-xs font-semibold text-emerald-200 hover:bg-emerald-300 dark:hover:bg-emerald-400/30 transition-colors duration-300"
                                 @click="
                                     reserve(
                                         court.id,
@@ -498,14 +498,14 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
                             </button>
                             <span
                                 v-else
-                                class="rounded-md border border-slate-700 px-3 py-1 text-xs text-slate-300"
+                                class="rounded-md border border-slate-300 dark:border-slate-700 transition-colors duration-300 px-3 py-1 text-xs text-slate-600 dark:text-slate-300 transition-colors duration-300"
                             >
                                 {{ slot.label }}
                             </span>
                         </template>
                     </div>
 
-                    <p v-else class="mt-2 text-xs text-amber-300">
+                    <p v-else class="mt-2 text-xs text-amber-600 dark:text-amber-300 transition-colors duration-300">
                         Sin turnos libres para este filtro.
                     </p>
                 </div>
@@ -513,13 +513,13 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
                 <Link
                     v-if="!authUser"
                     href="/login"
-                    class="mt-3 inline-block rounded-lg border border-slate-600 px-4 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-900"
+                    class="mt-3 inline-block rounded-lg border border-slate-400 dark:border-slate-600 transition-colors duration-300 px-4 py-2 text-xs font-semibold text-slate-800 dark:text-slate-200 transition-colors duration-300 hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors duration-300"
                 >
                     Inicia sesion para reservar
                 </Link>
                 <span
                     v-else-if="authUser.role !== 'cliente'"
-                    class="mt-3 block text-xs text-amber-300"
+                    class="mt-3 block text-xs text-amber-600 dark:text-amber-300 transition-colors duration-300"
                 >
                     Tu rol no puede reservar turnos de cliente.
                 </span>
@@ -530,28 +530,28 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
             <article
                 v-for="tournament in props.community.tournaments"
                 :key="tournament.id"
-                class="rounded-2xl border border-slate-800 bg-slate-900/60 p-5"
+                class="rounded-2xl border border-slate-200 dark:border-slate-800 transition-colors duration-300 bg-white/60 dark:bg-slate-900/60 transition-colors duration-300 p-5"
             >
                 <div class="flex flex-wrap items-start justify-between gap-3">
                     <div>
                         <h3 class="text-lg font-bold text-emerald-200">
                             {{ tournament.name }}
                         </h3>
-                        <p class="text-xs text-slate-400">
+                        <p class="text-xs text-slate-500 dark:text-slate-400 transition-colors duration-300">
                             {{ tournament.sport || "Multideporte" }} ·
                             {{ tournament.category || "Sin categoria" }} ·
                             {{ tournament.format || "Formato a definir" }}
                         </p>
                     </div>
                     <span
-                        class="rounded-md border border-emerald-300/30 bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-200"
+                        class="rounded-md border border-emerald-500/30 dark:border-emerald-300/30 transition-colors duration-300 bg-emerald-100 dark:bg-emerald-400/10 transition-colors duration-300 px-3 py-1 text-xs font-semibold text-emerald-200"
                     >
                         {{ tournamentStatusLabel(tournament.status) }}
                     </span>
                 </div>
 
                 <div
-                    class="mt-3 grid gap-3 text-xs text-slate-300 md:grid-cols-2 lg:grid-cols-4"
+                    class="mt-3 grid gap-3 text-xs text-slate-600 dark:text-slate-300 transition-colors duration-300 md:grid-cols-2 lg:grid-cols-4"
                 >
                     <p>Inicio: {{ formatDate(tournament.start_date) }}</p>
                     <p>Fin: {{ formatDate(tournament.end_date) }}</p>
@@ -562,17 +562,17 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
                     <p>Inscripcion: {{ formatPrice(tournament.entry_fee) }}</p>
                 </div>
 
-                <p class="mt-2 text-xs text-slate-400">
+                <p class="mt-2 text-xs text-slate-500 dark:text-slate-400 transition-colors duration-300">
                     Premio: {{ tournament.prize }}
                 </p>
-                <p v-if="tournament.notes" class="mt-1 text-xs text-slate-400">
+                <p v-if="tournament.notes" class="mt-1 text-xs text-slate-500 dark:text-slate-400 transition-colors duration-300">
                     {{ tournament.notes }}
                 </p>
             </article>
 
             <div
                 v-if="props.community.tournaments.length === 0"
-                class="rounded-2xl border border-dashed border-slate-700 p-6 text-sm text-slate-300"
+                class="rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 transition-colors duration-300 p-6 text-sm text-slate-600 dark:text-slate-300 transition-colors duration-300"
             >
                 No hay torneos publicados para este deporte en el complejo.
             </div>
@@ -582,14 +582,14 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
             <article
                 v-for="post in props.community.team_board"
                 :key="post.id"
-                class="rounded-2xl border border-slate-800 bg-slate-900/60 p-5"
+                class="rounded-2xl border border-slate-200 dark:border-slate-800 transition-colors duration-300 bg-white/60 dark:bg-slate-900/60 transition-colors duration-300 p-5"
             >
                 <div class="flex flex-wrap items-start justify-between gap-3">
                     <div>
                         <h3 class="text-lg font-bold text-emerald-200">
                             {{ post.title }}
                         </h3>
-                        <p class="text-xs text-slate-400">
+                        <p class="text-xs text-slate-500 dark:text-slate-400 transition-colors duration-300">
                             {{ post.sport }} · Nivel
                             {{ post.level || "sin definir" }}
                         </p>
@@ -602,7 +602,7 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
                 </div>
 
                 <div
-                    class="mt-3 grid gap-3 text-xs text-slate-300 md:grid-cols-2 lg:grid-cols-4"
+                    class="mt-3 grid gap-3 text-xs text-slate-600 dark:text-slate-300 transition-colors duration-300 md:grid-cols-2 lg:grid-cols-4"
                 >
                     <p>Dia: {{ post.play_day || "A coordinar" }}</p>
                     <p>Hora: {{ post.play_time || "A coordinar" }}</p>
@@ -613,14 +613,14 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
                     <p v-else>Convocatoria abierta</p>
                 </div>
 
-                <p v-if="post.notes" class="mt-2 text-xs text-slate-400">
+                <p v-if="post.notes" class="mt-2 text-xs text-slate-500 dark:text-slate-400 transition-colors duration-300">
                     {{ post.notes }}
                 </p>
             </article>
 
             <div
                 v-if="props.community.team_board.length === 0"
-                class="rounded-2xl border border-dashed border-slate-700 p-6 text-sm text-slate-300"
+                class="rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 transition-colors duration-300 p-6 text-sm text-slate-600 dark:text-slate-300 transition-colors duration-300"
             >
                 No hay convocatorias activas para este deporte.
             </div>
@@ -632,10 +632,10 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
             >
                 <div
                     v-if="hasPadelCategoryRankings"
-                    class="rounded-2xl border border-slate-800 bg-slate-900/60 p-4"
+                    class="rounded-2xl border border-slate-200 dark:border-slate-800 transition-colors duration-300 bg-white/60 dark:bg-slate-900/60 transition-colors duration-300 p-4"
                 >
                     <h3
-                        class="text-sm font-bold uppercase tracking-wide text-emerald-300"
+                        class="text-sm font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-300 transition-colors duration-300"
                     >
                         Ranking de padel por categoria
                     </h3>
@@ -645,17 +645,17 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
                             v-for="categoryRanking in props.community
                                 .padel_category_rankings"
                             :key="categoryRanking.tournament_id"
-                            class="overflow-hidden rounded-xl border border-slate-800"
+                            class="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 transition-colors duration-300"
                         >
                             <div
-                                class="border-b border-slate-800 bg-slate-950/60 px-4 py-3 text-xs text-slate-300"
+                                class="border-b border-slate-200 dark:border-slate-800 transition-colors duration-300 bg-slate-950/60 px-4 py-3 text-xs text-slate-600 dark:text-slate-300 transition-colors duration-300"
                             >
                                 <strong>{{ categoryRanking.category }}</strong>
                                 · {{ categoryRanking.tournament_name }}
                             </div>
                             <table class="min-w-full text-sm">
                                 <thead
-                                    class="bg-slate-950/40 text-xs uppercase tracking-wide text-slate-400"
+                                    class="bg-slate-950/40 text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400 transition-colors duration-300"
                                 >
                                     <tr>
                                         <th class="px-4 py-3 text-left">Pos</th>
@@ -674,7 +674,7 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
                                     <tr
                                         v-for="team in categoryRanking.ranking"
                                         :key="`${categoryRanking.tournament_id}-${team.team}`"
-                                        class="border-t border-slate-800 text-slate-200"
+                                        class="border-t border-slate-200 dark:border-slate-800 transition-colors duration-300 text-slate-800 dark:text-slate-200 transition-colors duration-300"
                                     >
                                         <td class="px-4 py-3 font-semibold">
                                             {{ team.position }}
@@ -698,7 +698,7 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
                                             {{ team.goal_diff }}
                                         </td>
                                         <td
-                                            class="px-4 py-3 font-bold text-emerald-300"
+                                            class="px-4 py-3 font-bold text-emerald-600 dark:text-emerald-300 transition-colors duration-300"
                                         >
                                             {{ team.points }}
                                         </td>
@@ -711,16 +711,16 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
 
                 <div
                     v-if="hasPadelIndividualRanking"
-                    class="rounded-2xl border border-slate-800 bg-slate-900/60 p-4"
+                    class="rounded-2xl border border-slate-200 dark:border-slate-800 transition-colors duration-300 bg-white/60 dark:bg-slate-900/60 transition-colors duration-300 p-4"
                 >
                     <h3
-                        class="text-sm font-bold uppercase tracking-wide text-emerald-300"
+                        class="text-sm font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-300 transition-colors duration-300"
                     >
                         Ranking individual de padel
                     </h3>
                     <p
                         v-if="props.community.padel_individual_tournament"
-                        class="mt-1 text-xs text-slate-400"
+                        class="mt-1 text-xs text-slate-500 dark:text-slate-400 transition-colors duration-300"
                     >
                         Torneo:
                         {{ props.community.padel_individual_tournament.name }}
@@ -739,11 +739,11 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
                     </p>
 
                     <div
-                        class="mt-3 overflow-hidden rounded-xl border border-slate-800"
+                        class="mt-3 overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 transition-colors duration-300"
                     >
                         <table class="min-w-full text-sm">
                             <thead
-                                class="bg-slate-950/40 text-xs uppercase tracking-wide text-slate-400"
+                                class="bg-slate-950/40 text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400 transition-colors duration-300"
                             >
                                 <tr>
                                     <th class="px-4 py-3 text-left">Pos</th>
@@ -763,7 +763,7 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
                                     v-for="player in props.community
                                         .padel_individual_ranking"
                                     :key="player.team"
-                                    class="border-t border-slate-800 text-slate-200"
+                                    class="border-t border-slate-200 dark:border-slate-800 transition-colors duration-300 text-slate-800 dark:text-slate-200 transition-colors duration-300"
                                 >
                                     <td class="px-4 py-3 font-semibold">
                                         {{ player.position }}
@@ -783,7 +783,7 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
                                         {{ player.goal_diff }}
                                     </td>
                                     <td
-                                        class="px-4 py-3 font-bold text-emerald-300"
+                                        class="px-4 py-3 font-bold text-emerald-600 dark:text-emerald-300 transition-colors duration-300"
                                     >
                                         {{ player.points }}
                                     </td>
@@ -797,7 +797,7 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
             <template v-else>
                 <div
                     v-if="props.community.ranking_tournament"
-                    class="rounded-xl border border-slate-800 bg-slate-900/60 p-3 text-xs text-slate-300"
+                    class="rounded-xl border border-slate-200 dark:border-slate-800 transition-colors duration-300 bg-white/60 dark:bg-slate-900/60 transition-colors duration-300 p-3 text-xs text-slate-600 dark:text-slate-300 transition-colors duration-300"
                 >
                     Ranking del torneo:
                     <strong>{{
@@ -809,11 +809,11 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
                 </div>
 
                 <div
-                    class="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60"
+                    class="overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 transition-colors duration-300 bg-white/60 dark:bg-slate-900/60 transition-colors duration-300"
                 >
                     <table class="min-w-full text-sm">
                         <thead
-                            class="bg-slate-950/60 text-xs uppercase tracking-wide text-slate-400"
+                            class="bg-slate-950/60 text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400 transition-colors duration-300"
                         >
                             <tr>
                                 <th class="px-4 py-3 text-left">Pos</th>
@@ -830,7 +830,7 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
                             <tr
                                 v-for="team in props.community.ranking"
                                 :key="team.position"
-                                class="border-t border-slate-800 text-slate-200"
+                                class="border-t border-slate-200 dark:border-slate-800 transition-colors duration-300 text-slate-800 dark:text-slate-200 transition-colors duration-300"
                             >
                                 <td class="px-4 py-3 font-semibold">
                                     {{ team.position }}
@@ -842,7 +842,7 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
                                 <td class="px-4 py-3">{{ team.losses }}</td>
                                 <td class="px-4 py-3">{{ team.goal_diff }}</td>
                                 <td
-                                    class="px-4 py-3 font-bold text-emerald-300"
+                                    class="px-4 py-3 font-bold text-emerald-600 dark:text-emerald-300 transition-colors duration-300"
                                 >
                                     {{ team.points }}
                                 </td>
@@ -853,7 +853,7 @@ function teamBoardKindLabel(kind: TeamBoardPost["kind"]): string {
 
                 <div
                     v-if="props.community.ranking.length === 0"
-                    class="rounded-2xl border border-dashed border-slate-700 p-6 text-sm text-slate-300"
+                    class="rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 transition-colors duration-300 p-6 text-sm text-slate-600 dark:text-slate-300 transition-colors duration-300"
                 >
                     No hay ranking cargado todavia para el deporte seleccionado.
                 </div>
