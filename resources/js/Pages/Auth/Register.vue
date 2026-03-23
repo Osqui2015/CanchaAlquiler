@@ -17,11 +17,15 @@ function submit(): void {
 
 <template>
     <AppShell>
-        <section
-            class="mx-auto w-full max-w-lg rounded-2xl border border-slate-200 dark:border-slate-800 transition-colors duration-300 bg-white/60 dark:bg-slate-900/60 transition-colors duration-300 p-6"
-        >
-            <h1 class="text-2xl font-black text-emerald-600 dark:text-emerald-300 transition-colors duration-300">Crear cuenta</h1>
-            <p class="mt-2 text-sm text-slate-500 dark:text-slate-400 transition-colors duration-300">
+        <section class="card mx-auto w-full max-w-lg shadow-sm">
+            <h1
+                class="text-2xl font-black text-emerald-600 dark:text-emerald-300 transition-colors duration-300"
+            >
+                Crear cuenta
+            </h1>
+            <p
+                class="mt-2 text-sm text-slate-500 dark:text-slate-400 transition-colors duration-300"
+            >
                 Registrate para poder reservar turnos online.
             </p>
 
@@ -35,7 +39,7 @@ function submit(): void {
                         v-model="form.name"
                         type="text"
                         required
-                        class="w-full rounded-lg border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-slate-50 dark:bg-slate-950 transition-colors duration-300 px-3 py-2 text-sm outline-none focus:border-emerald-400"
+                        class="form-field w-full"
                     />
                     <p
                         v-if="form.errors.name"
@@ -55,7 +59,7 @@ function submit(): void {
                             v-model="form.email"
                             type="email"
                             required
-                            class="w-full rounded-lg border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-slate-50 dark:bg-slate-950 transition-colors duration-300 px-3 py-2 text-sm outline-none focus:border-emerald-400"
+                            class="form-field w-full"
                         />
                         <p
                             v-if="form.errors.email"
@@ -72,7 +76,7 @@ function submit(): void {
                         <input
                             v-model="form.phone"
                             type="text"
-                            class="w-full rounded-lg border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-slate-50 dark:bg-slate-950 transition-colors duration-300 px-3 py-2 text-sm outline-none focus:border-emerald-400"
+                            class="form-field w-full"
                         />
                         <p
                             v-if="form.errors.phone"
@@ -93,7 +97,7 @@ function submit(): void {
                             v-model="form.password"
                             type="password"
                             required
-                            class="w-full rounded-lg border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-slate-50 dark:bg-slate-950 transition-colors duration-300 px-3 py-2 text-sm outline-none focus:border-emerald-400"
+                            class="form-field w-full"
                         />
                         <p
                             v-if="form.errors.password"
@@ -111,7 +115,7 @@ function submit(): void {
                             v-model="form.password_confirmation"
                             type="password"
                             required
-                            class="w-full rounded-lg border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-slate-50 dark:bg-slate-950 transition-colors duration-300 px-3 py-2 text-sm outline-none focus:border-emerald-400"
+                            class="form-field w-full"
                         />
                     </div>
                 </div>
@@ -119,13 +123,15 @@ function submit(): void {
                 <button
                     type="submit"
                     :disabled="form.processing"
-                    class="rounded-lg bg-emerald-400 px-4 py-2 text-sm font-bold text-slate-950 hover:bg-emerald-300 disabled:opacity-60"
+                    class="btn-primary w-full"
                 >
                     Crear cuenta
                 </button>
             </form>
 
-            <p class="mt-4 text-sm text-slate-500 dark:text-slate-400 transition-colors duration-300">
+            <p
+                class="mt-4 text-sm text-slate-500 dark:text-slate-400 transition-colors duration-300"
+            >
                 Ya tienes cuenta?
                 <Link
                     href="/login"

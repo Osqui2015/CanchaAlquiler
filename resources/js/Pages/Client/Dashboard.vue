@@ -73,9 +73,11 @@ function approveDemo(id: number): void {
 function statusClass(status: Reservation["status"]): string {
     return {
         pendiente_pago: "bg-amber-400/20 text-amber-200 border-amber-300/30",
-        confirmada: "bg-emerald-200 dark:bg-emerald-400/20 transition-colors duration-300 text-emerald-200 border-emerald-500/30 dark:border-emerald-300/30 transition-colors duration-300",
+        confirmada:
+            "bg-emerald-200 dark:bg-emerald-400/20 transition-colors duration-300 text-emerald-200 border-emerald-500/30 dark:border-emerald-300/30 transition-colors duration-300",
         cancelada: "bg-rose-400/20 text-rose-200 border-rose-300/30",
-        expirada: "bg-slate-400/20 text-slate-600 dark:text-slate-300 transition-colors duration-300 border-slate-300/30",
+        expirada:
+            "bg-slate-400/20 text-slate-600 dark:text-slate-300 transition-colors duration-300 border-slate-300/30",
         no_show: "bg-orange-400/20 text-orange-200 border-orange-300/30",
     }[status];
 }
@@ -93,13 +95,15 @@ function statusText(status: Reservation["status"]): string {
 
 <template>
     <AppShell>
-        <section
-            class="rounded-2xl border border-slate-200 dark:border-slate-800 transition-colors duration-300 bg-white/60 dark:bg-slate-900/60 transition-colors duration-300 p-6"
-        >
-            <h1 class="text-2xl font-black text-emerald-600 dark:text-emerald-300 transition-colors duration-300">
+        <section class="card shadow-sm">
+            <h1
+                class="text-2xl font-black text-emerald-600 dark:text-emerald-300 transition-colors duration-300"
+            >
                 Mi panel de reservas
             </h1>
-            <p class="mt-2 text-sm text-slate-600 dark:text-slate-300 transition-colors duration-300">
+            <p
+                class="mt-2 text-sm text-slate-600 dark:text-slate-300 transition-colors duration-300"
+            >
                 Aqui puedes ver historial, estado y completar la seña para
                 confirmar turnos.
             </p>
@@ -119,20 +123,24 @@ function statusText(status: Reservation["status"]): string {
             <article
                 v-for="reservation in props.reservations"
                 :key="reservation.id"
-                class="rounded-2xl border border-slate-200 dark:border-slate-800 transition-colors duration-300 bg-white/60 dark:bg-slate-900/60 transition-colors duration-300 p-5"
+                class="card card--muted"
             >
                 <div class="flex flex-wrap items-start justify-between gap-3">
                     <div>
                         <h2 class="text-lg font-bold text-emerald-200">
                             {{ reservation.code }}
                         </h2>
-                        <p class="text-sm text-slate-600 dark:text-slate-300 transition-colors duration-300">
+                        <p
+                            class="text-sm text-slate-600 dark:text-slate-300 transition-colors duration-300"
+                        >
                             {{ reservation.complex.name }} ·
                             {{ reservation.court.name }} ({{
                                 reservation.court.sport.name
                             }})
                         </p>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 transition-colors duration-300">
+                        <p
+                            class="text-xs text-slate-500 dark:text-slate-400 transition-colors duration-300"
+                        >
                             {{ reservation.start_at }} →
                             {{ reservation.end_at }}
                         </p>
@@ -145,7 +153,9 @@ function statusText(status: Reservation["status"]): string {
                     </span>
                 </div>
 
-                <div class="mt-3 text-sm text-slate-600 dark:text-slate-300 transition-colors duration-300">
+                <div
+                    class="mt-3 text-sm text-slate-600 dark:text-slate-300 transition-colors duration-300"
+                >
                     Total: {{ reservation.total_amount }} · Sena:
                     {{ reservation.deposit_amount }}
                 </div>

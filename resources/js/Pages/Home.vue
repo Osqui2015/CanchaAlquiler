@@ -171,16 +171,18 @@ function complexProfileHref(group: AvailabilityGroup): string {
 
 <template>
     <AppShell>
-        <section
-            class="rounded-2xl border border-slate-200 dark:border-slate-800 transition-colors duration-300 bg-white/60 dark:bg-slate-900/60 transition-colors duration-300 p-6"
-        >
-            <p class="text-xs uppercase tracking-[0.25em] text-emerald-600 dark:text-emerald-300 transition-colors duration-300">
+        <section class="card shadow-sm">
+            <p
+                class="text-xs uppercase tracking-[0.25em] text-emerald-600 dark:text-emerald-300 transition-colors duration-300"
+            >
                 Buscador inteligente
             </p>
             <h1 class="mt-2 text-3xl font-black leading-tight sm:text-5xl">
                 Reserva canchas de cualquier deporte en minutos.
             </h1>
-            <p class="mt-4 max-w-3xl text-sm text-slate-600 dark:text-slate-300 transition-colors duration-300 sm:text-base">
+            <p
+                class="mt-4 max-w-3xl text-sm text-slate-600 dark:text-slate-300 transition-colors duration-300 sm:text-base"
+            >
                 Selecciona deporte, provincia/ciudad, fecha y horario. El
                 sistema te mostrara solo disponibilidad real.
             </p>
@@ -192,7 +194,7 @@ function complexProfileHref(group: AvailabilityGroup): string {
                 <select
                     v-model="searchForm.sport_id"
                     required
-                    class="rounded-lg border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-slate-50 dark:bg-slate-950 transition-colors duration-300 px-3 py-2 text-sm"
+                    class="form-field"
                 >
                     <option value="">Deporte</option>
                     <option
@@ -207,7 +209,7 @@ function complexProfileHref(group: AvailabilityGroup): string {
                 <select
                     v-model="searchForm.province_id"
                     required
-                    class="rounded-lg border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-slate-50 dark:bg-slate-950 transition-colors duration-300 px-3 py-2 text-sm"
+                    class="form-field"
                 >
                     <option value="">Provincia</option>
                     <option
@@ -222,7 +224,7 @@ function complexProfileHref(group: AvailabilityGroup): string {
                 <select
                     v-model="searchForm.city_id"
                     required
-                    class="rounded-lg border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-slate-50 dark:bg-slate-950 transition-colors duration-300 px-3 py-2 text-sm"
+                    class="form-field"
                 >
                     <option value="">Ciudad</option>
                     <option
@@ -238,7 +240,7 @@ function complexProfileHref(group: AvailabilityGroup): string {
                     v-model="searchForm.date"
                     type="date"
                     required
-                    class="rounded-lg border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-slate-50 dark:bg-slate-950 transition-colors duration-300 px-3 py-2 text-sm"
+                    class="form-field"
                 />
                 <div class="flex gap-2">
                     <input
@@ -246,18 +248,15 @@ function complexProfileHref(group: AvailabilityGroup): string {
                         type="time"
                         step="60"
                         required
-                        class="w-full rounded-lg border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-slate-50 dark:bg-slate-950 transition-colors duration-300 px-3 py-2 text-sm"
+                        class="form-field w-full"
                     />
-                    <button
-                        type="submit"
-                        class="rounded-lg bg-emerald-400 px-4 py-2 text-sm font-bold text-slate-950 hover:bg-emerald-300"
-                    >
-                        Buscar
-                    </button>
+                    <button type="submit" class="btn-primary">Buscar</button>
                 </div>
             </form>
 
-            <p class="mt-3 text-xs text-slate-500 dark:text-slate-400 transition-colors duration-300">
+            <p
+                class="mt-3 text-xs text-slate-500 dark:text-slate-400 transition-colors duration-300"
+            >
                 Puedes explorar complejos, mapa y horarios disponibles sin
                 iniciar sesion. Solo se solicita cuenta al momento de reservar.
             </p>
@@ -275,11 +274,13 @@ function complexProfileHref(group: AvailabilityGroup): string {
             <article
                 v-for="group in props.availability"
                 :key="group.complex.id"
-                class="rounded-2xl border border-slate-200 dark:border-slate-800 transition-colors duration-300 bg-white/60 dark:bg-slate-900/60 transition-colors duration-300 p-6"
+                class="card shadow-sm"
             >
                 <div class="flex flex-wrap items-start justify-between gap-4">
                     <div>
-                        <h2 class="text-xl font-bold text-emerald-600 dark:text-emerald-300 transition-colors duration-300">
+                        <h2
+                            class="text-xl font-bold text-emerald-600 dark:text-emerald-300 transition-colors duration-300"
+                        >
                             <Link
                                 :href="complexProfileHref(group)"
                                 class="hover:text-emerald-700 dark:hover:text-emerald-200 transition-colors duration-300 hover:underline"
@@ -287,7 +288,9 @@ function complexProfileHref(group: AvailabilityGroup): string {
                                 {{ group.complex.name }}
                             </Link>
                         </h2>
-                        <p class="text-sm text-slate-600 dark:text-slate-300 transition-colors duration-300">
+                        <p
+                            class="text-sm text-slate-600 dark:text-slate-300 transition-colors duration-300"
+                        >
                             {{ group.complex.address }}
                         </p>
                         <p
@@ -324,7 +327,9 @@ function complexProfileHref(group: AvailabilityGroup): string {
                         >
                             {{ group.complex.description }}
                         </p>
-                        <p class="mt-1 text-xs text-slate-500 dark:text-slate-400 transition-colors duration-300">
+                        <p
+                            class="mt-1 text-xs text-slate-500 dark:text-slate-400 transition-colors duration-300"
+                        >
                             Contacto:
                             {{ group.complex.phone_contact || "No informado" }}
                         </p>
@@ -357,7 +362,9 @@ function complexProfileHref(group: AvailabilityGroup): string {
                         <div class="flex items-start justify-between gap-3">
                             <div>
                                 <h3 class="font-semibold">{{ court.name }}</h3>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 transition-colors duration-300">
+                                <p
+                                    class="text-xs text-slate-500 dark:text-slate-400 transition-colors duration-300"
+                                >
                                     {{ court.sport.name }} ·
                                     {{
                                         court.surface_type.replaceAll("_", " ")
@@ -370,18 +377,23 @@ function complexProfileHref(group: AvailabilityGroup): string {
                                     {{ footballFormatLabel(court) }}
                                 </p>
                             </div>
-                            <span class="text-sm font-bold text-emerald-600 dark:text-emerald-300 transition-colors duration-300">{{
-                                formatPrice(court.base_price)
-                            }}</span>
+                            <span
+                                class="text-sm font-bold text-emerald-600 dark:text-emerald-300 transition-colors duration-300"
+                                >{{ formatPrice(court.base_price) }}</span
+                            >
                         </div>
 
-                        <p class="mt-2 text-xs text-slate-500 dark:text-slate-400 transition-colors duration-300">
+                        <p
+                            class="mt-2 text-xs text-slate-500 dark:text-slate-400 transition-colors duration-300"
+                        >
                             {{ court.players_capacity }} jugadores · turnos de
                             {{ court.slot_duration_minutes }} min
                         </p>
 
                         <div class="mt-3">
-                            <p class="text-xs font-semibold text-slate-600 dark:text-slate-300 transition-colors duration-300">
+                            <p
+                                class="text-xs font-semibold text-slate-600 dark:text-slate-300 transition-colors duration-300"
+                            >
                                 Horarios libres desde
                                 {{ searchForm.start_time }}
                             </p>
@@ -397,7 +409,7 @@ function complexProfileHref(group: AvailabilityGroup): string {
                                             authUser.role === 'cliente'
                                         "
                                         type="button"
-                                        class="rounded-md bg-emerald-200 dark:bg-emerald-400/20 transition-colors duration-300 px-3 py-1 text-xs font-semibold text-emerald-200 hover:bg-emerald-300 dark:hover:bg-emerald-400/30 transition-colors duration-300"
+                                        class="btn-primary text-xs px-3 py-1"
                                         @click="
                                             reserve(
                                                 court.id,

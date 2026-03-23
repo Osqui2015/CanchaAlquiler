@@ -1,0 +1,158 @@
+:root {
+    /* Spacing */
+    --space-base: 4px;
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 24px;
+    --space-6: 32px;
+
+    /* Colors (Precision & Density) */
+    --color-foreground: #0b1220;
+    --color-muted: #6b7280;
+    --color-background: #f8fafc;
+    --color-surface: #ffffff;
+    --color-accent: #1d4ed8; /* stronger, better contrast */
+    --color-accent-rgb: 29, 78, 216;
+    --focus-ring: rgba(29, 78, 216, 0.9);
+    --shadow-sm: 0 6px 12px rgba(11, 17, 32, 0.06);
+    --color-success: #16a34a;
+    --color-warning: #f59e0b;
+    --color-danger: #dc2626;
+
+    /* Typography */
+    --font-sans:
+        Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+        Arial, sans-serif;
+    --h1-size: 28px;
+    --h1-line: 36px;
+    --h2-size: 20px;
+    --h2-line: 28px;
+    --body-size: 14px;
+    --body-line: 20px;
+
+    /* Elevation / Borders */
+    --border-default: rgba(15, 23, 42, 0.06);
+    --border-weak: rgba(15, 23, 42, 0.04);
+}
+
+/* Dark mode overrides */
+.dark {
+    --color-foreground: #f3f4f6;
+    --color-muted: #9ca3af;
+    --color-background: #071021;
+    --color-surface: #0b1220;
+    --color-accent: #60a5fa;
+    --color-accent-rgb: 96, 165, 250;
+    --focus-ring: rgba(96, 165, 250, 0.95);
+    --shadow-sm: 0 6px 18px rgba(2, 6, 23, 0.6);
+    --color-success: #34d399;
+    --color-warning: #fbbf24;
+    --color-danger: #f87171;
+    --border-default: rgba(255, 255, 255, 0.06);
+    --border-weak: rgba(255, 255, 255, 0.04);
+}
+
+/* Base utilities to apply the design system */
+body {
+    background: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-size: var(--body-size);
+    line-height: var(--body-line);
+}
+
+.btn-primary {
+    height: 36px;
+    padding: 0 var(--space-3);
+    background: var(--color-accent);
+    color: #ffffff;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-primary:hover {
+    filter: brightness(0.95);
+}
+
+.btn-primary:active {
+    transform: translateY(1px);
+}
+
+.btn-secondary {
+    height: 36px;
+    padding: 0 var(--space-3);
+    background: transparent;
+    color: var(--color-foreground);
+    border: 1px solid var(--border-default);
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-secondary:hover {
+    background: rgba(var(--color-accent-rgb), 0.06);
+}
+
+.card {
+    background: var(--color-surface);
+    border: 1px solid var(--border-weak);
+    padding: var(--space-4);
+    border-radius: 8px;
+}
+
+.card:hover {
+    box-shadow: var(--shadow-sm);
+}
+
+.card--muted {
+    background: rgba(248, 250, 252, 0.92);
+    border-radius: 10px;
+    padding: calc(var(--space-4) - 4px);
+}
+
+.panel {
+    border-radius: 16px;
+    padding: var(--space-4);
+    background: var(--color-surface);
+    border: 1px solid var(--border-weak);
+}
+
+.form-field {
+    height: 40px;
+    padding: 0 var(--space-3);
+    background: var(--color-surface);
+    border: 1px solid var(--border-weak);
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Ensure native inputs inside form-field inherit styles and are accessible */
+.form-field input,
+.form-field textarea,
+.form-field select {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: inherit;
+    font: inherit;
+    width: 100%;
+    padding: 6px 0;
+}
+
+/* Accessibility focus outline */
+.btn-primary:focus,
+.btn-secondary:focus,
+.form-field:focus,
+.form-field input:focus,
+.form-field textarea:focus,
+.form-field select:focus {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(var(--color-accent-rgb), 0.12);
+}

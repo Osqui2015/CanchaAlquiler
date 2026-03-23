@@ -12,16 +12,13 @@
 
 <body class="min-h-screen bg-slate-100 text-slate-900 antialiased">
     <main class="mx-auto w-full max-w-2xl px-6 py-16">
-        <div class="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+        <div class="card shadow-sm p-8">
             <h1 class="mb-2 text-2xl font-semibold">Demo Livewire 4</h1>
             <p class="mb-8 text-sm text-slate-600">Esta pantalla confirma que Livewire esta activo en el proyecto.</p>
 
             <livewire:demo-counter />
 
-            <a href="{{ route('home') }}"
-                class="mt-8 inline-block text-sm font-medium text-sky-600 underline underline-offset-4">
-                Volver al Home de Inertia
-            </a>
+            <a href="{{ route('home') }}" class="mt-8 inline-block btn-secondary text-sm">Volver al Home de Inertia</a>
         </div>
     </main>
 
