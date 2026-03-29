@@ -12,7 +12,7 @@ use Inertia\Response;
 
 class HomeController extends Controller
 {
-  public function index(Request $request, AvailabilitySearchService $availabilitySearchService): Response
+  public function index(Request $request, AvailabilitySearchService $availabilitySearchService): Response|\Illuminate\Http\RedirectResponse
   {
     $catalogs = [
       'sports' => Sport::query()
@@ -40,10 +40,18 @@ class HomeController extends Controller
       $validated = $request->validate([
         'sport_id' => ['required', 'integer', 'exists:sports,id'],
         'city_id' => ['required', 'integer', 'exists:cities,id'],
-        'date' => ['required', 'date_format:Y-m-d'],
+        'date' => ['required', 'date_format:Y-m-d', 'after_or_equal:today'],
         'start_time' => ['required', 'date_format:H:i'],
         'end_time' => ['nullable', 'date_format:H:i', 'after:start_time'],
       ]);
+
+      // Si la fecha es hoy, validar que la hora de inicio no sea en el pasado
+      if ($validated['date'] === now()->toDateString()) {
+          $currentTime = now()->timezone('America/Argentina/Buenos_Aires')->format('H:i');
+          if ($validated['start_time'] < $currentTime) {
+              return back()->withErrors(['start_time' => 'La hora de inicio no puede ser en el pasado para el día de hoy.']);
+          }
+      }
 
       $availability = $availabilitySearchService->search($validated)->all();
     }

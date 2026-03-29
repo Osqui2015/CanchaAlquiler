@@ -7,6 +7,7 @@ use App\Http\Controllers\Web\ComplexProfileController;
 use App\Http\Controllers\Web\HomeController;
 use App\Http\Controllers\Web\SuperAdminPanelController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/complejos/{slug}', [ComplexProfileController::class, 'show'])->name('complex.show');
@@ -39,6 +40,10 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/panel/cliente', [ClientPanelController::class, 'index'])
         ->middleware('role:cliente')
         ->name('panel.cliente');
+
+    Route::get('/panel/cliente/historial', [ClientPanelController::class, 'history'])
+        ->middleware('role:cliente')
+        ->name('panel.cliente.historial');
 
     Route::post('/panel/cliente/reservas', [ClientPanelController::class, 'storeReservation'])
         ->middleware('role:cliente')
@@ -103,10 +108,14 @@ Route::middleware('auth')->group(function (): void {
     Route::post('/panel/admin-cancha/complejos/{complex}/reservas/{reservation}/cancelar', [AdminCanchaPanelController::class, 'cancelReservation'])
         ->middleware('role:admin_cancha')
         ->name('panel.admincancha.reservas.cancelar');
-        
+
     Route::put('/panel/admin-cancha/complejos/{complex}/reservas/{reservation}', [AdminCanchaPanelController::class, 'updateReservation'])
         ->middleware('role:admin_cancha')
         ->name('panel.admincancha.reservas.update');
+
+    Route::post('/panel/admin-cancha/complejos/{complex}/partidos', [\App\Http\Controllers\Web\AdminCanchaMatchController::class, 'store'])
+        ->middleware('role:admin_cancha')
+        ->name('panel.admincancha.partidos.store');
 
     Route::post('/panel/admin-cancha/complejos/{complex}/turnos-fijos', [AdminCanchaPanelController::class, 'storeRecurringReservation'])
         ->middleware('role:admin_cancha')
@@ -127,11 +136,11 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/panel/admin-cancha/clientes', [\App\Http\Controllers\Web\AdminCanchaClientController::class, 'index'])
         ->middleware('role:admin_cancha')
         ->name('panel.admincancha.clientes.index');
-        
+
     Route::post('/panel/admin-cancha/clientes', [\App\Http\Controllers\Web\AdminCanchaClientController::class, 'store'])
         ->middleware('role:admin_cancha')
         ->name('panel.admincancha.clientes.store');
-        
+
     Route::put('/panel/admin-cancha/clientes/{client}', [\App\Http\Controllers\Web\AdminCanchaClientController::class, 'update'])
         ->middleware('role:admin_cancha')
         ->name('panel.admincancha.clientes.update');
@@ -163,4 +172,17 @@ Route::middleware('auth')->group(function (): void {
     Route::put('/panel/super-admin/clientes/{user}', [SuperAdminPanelController::class, 'updateClient'])
         ->middleware('role:super_admin')
         ->name('panel.superadmin.clientes.update');
+
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+
+        Route::get('/perfil/editar', [ProfileController::class, 'edit'])
+            ->middleware('auth')
+            ->name('profile.edit');
+
+        Route::post('/perfil/editar', [ProfileController::class, 'update'])
+            ->middleware('auth')
+            ->name('profile.update');
+    });
 });

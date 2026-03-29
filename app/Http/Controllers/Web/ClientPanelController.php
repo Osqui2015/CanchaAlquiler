@@ -16,15 +16,57 @@ class ClientPanelController extends Controller
 {
   public function index(Request $request): Response
   {
-    $reservations = $request->user()
-      ->clientReservations()
+    $user = $request->user();
+
+    // Reservas regulares con payments
+    $regularReservations = $user->clientReservations()
       ->with(['court.sport', 'complex.city.province', 'payments'])
-      ->orderByDesc('created_at')
+      ->get();
+
+    // Reservas recurrentes SIN payments
+    $recurringReservations = $user->recurringReservations()
+      ->with(['court.sport', 'complex.city.province'])
+      ->get();
+
+    // Unir ambas colecciones y ordenar por fecha de creación
+    $reservations = $regularReservations->concat($recurringReservations)
+      ->sortByDesc('created_at')
+      ->values();
+
+    // Estadísticas de ranking y sedes favoritas
+    $stats = $user->playerStats()
+      ->with('sport:id,name,slug')
+      ->get();
+
+    $venueStats = $user->venueStats()
+      ->with('complex:id,name')
+      ->orderByDesc('matches_played')
+      ->take(3)
       ->get();
 
     return Inertia::render('Client/Dashboard', [
       'reservations' => $reservations,
+      'stats' => $stats,
+      'venueStats' => $venueStats,
       'checkout' => session('checkout'),
+    ]);
+  }
+
+  public function history(Request $request): Response
+  {
+    $user = $request->user();
+
+    $history = $user->clientReservations()
+      ->where(function ($query) {
+          $query->where('start_at', '<', now())
+                ->orWhere('status', \App\Models\Reservation::STATUS_CANCELADA);
+      })
+      ->with(['court.sport', 'complex.city.province', 'payments'])
+      ->orderByDesc('start_at')
+      ->get();
+
+    return Inertia::render('Client/History', [
+      'history' => $history,
     ]);
   }
 
@@ -32,10 +74,18 @@ class ClientPanelController extends Controller
   {
     $validated = $request->validate([
       'court_id' => ['required', 'integer', 'exists:courts,id'],
-      'date' => ['required', 'date_format:Y-m-d'],
+      'date' => ['required', 'date_format:Y-m-d', 'after_or_equal:today'],
       'start_time' => ['required', 'date_format:H:i'],
       'end_time' => ['nullable', 'date_format:H:i', 'after:start_time'],
     ]);
+
+    // Validar que no sea en el pasado si es hoy
+    if ($validated['date'] === now()->toDateString()) {
+        $currentTime = now()->timezone('America/Argentina/Buenos_Aires')->format('H:i');
+        if ($validated['start_time'] < $currentTime) {
+            return back()->withErrors(['start_time' => 'No puedes reservar un turno que ya paso. Escolge un horario futuro.']);
+        }
+    }
 
     $reservationService->createReservation($request->user(), $validated);
 

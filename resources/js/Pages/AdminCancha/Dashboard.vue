@@ -184,7 +184,7 @@ const dayLabels: Record<number, string> = {
     7: "Domingo",
 };
 
-const activeTab = ref("reservas"); // 'reservas', 'canchas', 'clientes', 'horarios', 'torneos', 'comunidad', 'reportes'
+const activeTab = ref("reservas"); // 'reservas', 'canchas', 'clientes', 'horarios', 'torneos', 'comunidad', 'reportes', 'rankings'
 
 const dateFilter = useForm({ date: props.selectedDate });
 
@@ -463,18 +463,14 @@ function onSportChange(complexId: number) {
     }
 }
 
-function onVariantChange(complexId: number) {
+function onVariantChange(complexId: number): void {
     const form = courtFormsByComplex[complexId];
     const slug = getSportSlug(form.sport_id);
     const variants = sportVariants[slug] || [];
     const selected = variants.find((v) => v.value === form.variant);
     if (selected) {
         form.players_capacity = selected.capacity;
-        if (
-            !form.name ||
-            form.name.includes("Cancha Fútbol") ||
-            form.name.includes("Básquet")
-        ) {
+        if (!form.name || form.name.includes("Cancha Fútbol") || form.name.includes("Básquet")) {
             form.name = `Cancha ${selected.label}`;
         }
     }
@@ -919,7 +915,7 @@ const chartOptions = {
         legend: { display: false },
         tooltip: {
             backgroundColor: "rgba(15, 23, 42, 0.9)",
-            titleFont: { size: 10, weight: "bold" },
+            titleFont: { size: 10, weight: "bold" as const },
             bodyFont: { size: 12 },
             padding: 10,
             cornerRadius: 8,
@@ -1120,6 +1116,21 @@ function enableClient(c: any) {
         },
     );
 }
+
+const selectedSport = ref(null);
+const sports = ref([]);
+const rankings = ref({});
+
+onMounted(async () => {
+    const response = await axios.get(`/api/complexes/${complexId}/rankings`);
+    sports.value = response.data.sports;
+    rankings.value = response.data.rankings;
+});
+
+const filteredRankings = computed(() => {
+    if (!selectedSport.value) return [];
+    return rankings.value[selectedSport.value.name] || [];
+});
 </script>
 
 <template>
@@ -1184,6 +1195,7 @@ function enableClient(c: any) {
                         torneos: '🏆 Torneos y Ranking',
                         comunidad: '📣 Convocatorias',
                         reportes: '📊 Reportes y Estadísticas',
+                        rankings: '📊 Rankings',
                     }"
                     :key="tab"
                     @click="switchTab(tab)"
@@ -1941,7 +1953,8 @@ function enableClient(c: any) {
                                         Seleccionar Deporte
                                     </option>
                                     <option
-                                        v-for="sport in props.catalogs.sports"
+                                        v-for="sport in props
+                                            .catalogs.sports"
                                         :key="sport.id"
                                         :value="String(sport.id)"
                                     >
@@ -1965,8 +1978,8 @@ function enableClient(c: any) {
                                     @change="onVariantChange(complex.id)"
                                     class="w-full rounded-lg border-emerald-400/50 bg-emerald-400/5 text-emerald-600 dark:text-emerald-400 text-[10px] p-2 font-black uppercase italic animate-in slide-in-from-top-2 duration-300"
                                 >
-                                    <option value="">
-                                        Seleccionar Variante
+                                    <option
+                                        Se
                                     </option>
                                     <option
                                         v-for="v in sportVariants[
@@ -2599,8 +2612,7 @@ function enableClient(c: any) {
                                                     >{{
                                                         post.level || "Promedio"
                                                     }}</span
-                                                >
-                                            </p>
+                                            >
                                         </div>
                                     </div>
                                     <div
@@ -3456,7 +3468,7 @@ function enableClient(c: any) {
                         <input
                             v-model="clientForm.phone"
                             type="text"
-                            class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white p-3 text-sm focus:ring-2 focus:ring-emerald-500/20"
+                            class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-4 text-sm font-bold focus:ring-4 focus:ring-emerald-500/10"
                         />
                     </div>
                     <div v-if="!clientForm.id" class="space-y-1">
@@ -3678,7 +3690,7 @@ function enableClient(c: any) {
                                         >
                                     </div>
                                     <span
-                                        class="text-[8px] font-black text-emerald-600 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 rounded uppercase tracking-widest"
+                                        class="text-[8px] font-black text-emerald-600 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 rounded uppercase"
                                         >Seleccionar</span
                                     >
                                 </div>
@@ -3747,7 +3759,7 @@ function enableClient(c: any) {
                         <button
                             type="submit"
                             :disabled="recurringForm.processing"
-                            class="flex-1 py-4 rounded-2xl font-black bg-emerald-400 text-slate-950 shadow-lg shadow-emerald-400/20 uppercase text-xs tracking-widest transition-all hover:bg-emerald-300 disabled:opacity-50"
+                            class="flex-1 py-4 rounded-2xl font-black bg-emerald-400 text-slate-950 shadow-lg shadow-emerald-400/20 uppercase text-xs tracking-widest disabled:opacity-50"
                         >
                             {{ recurringForm.id ? "Actualizar" : "Confirmar" }}
                             Fijo
@@ -3822,7 +3834,7 @@ function enableClient(c: any) {
                             v-model="editComplexForm.phone_contact"
                             type="text"
                             placeholder="Ej: WhatsApp"
-                            class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-2 focus:ring-emerald-500/20"
+                            class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 p-4 text-sm font-bold focus:ring-4 focus:ring-sky-500/20"
                         />
                     </div>
                     <div class="space-y-1">
@@ -3845,7 +3857,7 @@ function enableClient(c: any) {
                             v-model="editComplexForm.instagram_url"
                             type="text"
                             placeholder="https://instagram.com/..."
-                            class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-2 focus:ring-sky-500/20"
+                            class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 p-4 text-sm font-bold focus:ring-4 focus:ring-sky-500/20"
                         />
                     </div>
                     <div class="space-y-1">
@@ -3857,7 +3869,7 @@ function enableClient(c: any) {
                             v-model="editComplexForm.facebook_url"
                             type="text"
                             placeholder="https://facebook.com/..."
-                            class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500/20"
+                            class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 p-4 text-sm font-bold focus:ring-4 focus:ring-blue-500/20"
                         />
                     </div>
 
@@ -4099,3 +4111,4 @@ function enableClient(c: any) {
         </div>
     </AppShell>
 </template>
+

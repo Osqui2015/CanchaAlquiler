@@ -89,5 +89,16 @@ class GalponSeeder extends Seeder
                 ]
             );
         }
+
+        // Crear estadísticas iniciales para usuarios registrados
+        $users = User::all();
+        foreach ($users as $user) {
+            foreach ([$padel] as $sport) { // Agregar más deportes si es necesario
+                \App\Models\PlayerStat::query()->updateOrCreate(
+                    ['user_id' => $user->id, 'sport_id' => $sport->id, 'match_type' => 'solo'],
+                    ['points' => rand(100, 1000), 'wins' => rand(0, 10), 'losses' => rand(0, 10), 'draws' => rand(0, 5)]
+                );
+            }
+        }
     }
 }

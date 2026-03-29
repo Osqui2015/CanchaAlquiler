@@ -44,8 +44,14 @@ class HandleInertiaRequests extends Middleware
                         'name' => $request->user()->name,
                         'email' => $request->user()->email,
                         'role' => $request->user()->role,
-                        'status' => $request->user()->status,
+                        'avatar_url' => $request->user()->avatar_url,
                     ]
+                    : null,
+                'pending_reservation' => $request->user()
+                    ? $request->user()->clientReservations()
+                        ->where('status', \App\Models\Reservation::STATUS_PENDIENTE_PAGO)
+                        ->orderBy('start_at', 'asc')
+                        ->first()
                     : null,
             ],
             'flash' => [

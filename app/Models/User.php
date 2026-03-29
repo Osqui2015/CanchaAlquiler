@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -37,6 +38,7 @@ class User extends Authenticatable
         'role',
         'status',
         'last_login_at',
+        'avatar', // Agregado para permitir asignación masiva
     ];
 
     /**
@@ -101,5 +103,35 @@ class User extends Authenticatable
     public function isCliente(): bool
     {
         return $this->role === self::ROLE_CLIENTE;
+    }
+
+    public function clientReservationsWithRecurring(): \Illuminate\Support\Collection
+    {
+        $regularReservations = $this->hasMany(Reservation::class, 'client_user_id')->get();
+        $recurringReservations = \App\Models\RecurringReservation::where('client_user_id', $this->id)->get();
+
+        return $regularReservations->concat($recurringReservations);
+    }
+
+    public function recurringReservations(): HasMany
+    {
+        return $this->hasMany(\App\Models\RecurringReservation::class, 'client_user_id');
+    }
+
+    public function playerStats(): HasMany
+    {
+        return $this->hasMany(PlayerStat::class);
+    }
+
+    public function venueStats(): HasMany
+    {
+        return $this->hasMany(PlayerVenueStat::class);
+    }
+
+    public function getAvatarUrlAttribute(): string
+    {
+        return $this->avatar
+            ? Storage::disk('public')->url($this->avatar)
+            : 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=10b981&background=ecfdf5';
     }
 }

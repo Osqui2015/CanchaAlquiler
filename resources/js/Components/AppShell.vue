@@ -13,6 +13,7 @@ type AuthUser = {
 type SharedPageProps = {
     auth: {
         user: AuthUser | null;
+        pending_reservation: any | null;
     };
     flash: {
         success?: string | null;
@@ -134,6 +135,28 @@ function toggleTheme() {
         </header>
 
         <div class="mx-auto w-full max-w-6xl px-6 py-6">
+            <!-- Global Reservation Alert -->
+            <div v-if="page.props.auth.pending_reservation"
+                 class="mb-6 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-slate-800 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="bg-amber-100 dark:bg-amber-800/40 p-2 rounded-xl text-amber-600 dark:text-amber-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="font-bold text-amber-800 dark:text-amber-200">Tienes una reserva pendiente de pago</p>
+                        <p class="text-sm text-amber-700/80 dark:text-amber-300/60 font-mono">
+                            {{ page.props.auth.pending_reservation.code }}
+                        </p>
+                    </div>
+                </div>
+                <Link href="/panel/cliente"
+                      class="px-5 py-2 bg-amber-500 hover:bg-amber-600 dark:bg-amber-600 dark:hover:bg-amber-700 text-white font-bold rounded-xl transition-all shadow-md">
+                    Pagar Ahora
+                </Link>
+            </div>
+
             <div
                 v-if="flashSuccess"
                 class="mb-4 rounded-lg border border-emerald-300/30 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-200"

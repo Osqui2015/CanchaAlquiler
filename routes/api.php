@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\AvailabilitySearchController;
 use App\Http\Controllers\Api\CatalogController;
 use App\Http\Controllers\Api\ClientReservationController;
 use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\RankingController;
 use App\Http\Controllers\Api\SuperAdmin\SuperAdminController;
 use Illuminate\Support\Facades\Route;
 
@@ -50,3 +51,5 @@ Route::prefix('super-admin')
 
     Route::get('/dashboard', [SuperAdminController::class, 'dashboard']);
   });
+
+Route::get('/complexes/{complex}/rankings', [RankingController::class, 'index']);

@@ -17,3 +17,4 @@
 
 /* Import local design system utilities */
 @import "./interface-design.css";
+@import "./overrides.css";

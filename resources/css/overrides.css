@@ -1,0 +1,57 @@
+/* Accessibility overrides for reservation panel */
+
+/* Make reservation titles and codes more prominent */
+.card h3,
+.card h2,
+.card .title,
+.reservation-code,
+.reservation-title {
+    color: var(--color-foreground) !important;
+    font-weight: 800 !important;
+    font-size: 1.125rem !important;
+}
+
+/* Stronger cancel button styles */
+.btn-danger,
+.btn-outline-danger,
+button.btn-danger,
+button.btn-cancel {
+    background: transparent !important;
+    color: var(--color-danger) !important;
+    border: 2px solid var(--color-danger) !important;
+    padding: 0 14px !important;
+    height: 38px !important;
+    border-radius: 8px !important;
+    font-weight: 700 !important;
+}
+
+button.btn-cancel:hover,
+.btn-danger:hover {
+    background: rgba(220, 38, 38, 0.08) !important;
+}
+
+/* Ensure secondary buttons have readable text */
+.btn-secondary {
+    color: var(--color-foreground) !important;
+    border: 1px solid rgba(15, 23, 42, 0.14) !important;
+}
+
+/* Status pill improvements */
+.status-pill,
+.badge-success,
+.badge-available {
+    background: rgba(22, 163, 74, 0.12) !important;
+    color: var(--color-success) !important;
+    padding: 6px 12px !important;
+    border-radius: 10px !important;
+    font-weight: 800 !important;
+}
+
+.badge-danger,
+.badge-unavailable {
+    background: rgba(220, 38, 38, 0.06) !important;
+    color: var(--color-danger) !important;
+    padding: 6px 12px !important;
+    border-radius: 10px !important;
+    font-weight: 800 !important;
+}

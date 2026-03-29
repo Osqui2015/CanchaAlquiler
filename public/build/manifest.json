@@ -1,13 +1,13 @@
 {
-  "_AppShell.vue_vue_type_script_setup_true_lang-BPq4C9eb.js": {
-    "file": "assets/AppShell.vue_vue_type_script_setup_true_lang-BPq4C9eb.js",
+  "_AppShell.vue_vue_type_script_setup_true_lang-lkMDjd69.js": {
+    "file": "assets/AppShell.vue_vue_type_script_setup_true_lang-lkMDjd69.js",
     "name": "AppShell.vue_vue_type_script_setup_true_lang",
     "imports": [
       "resources/js/app.ts"
     ]
   },
   "resources/css/app.css": {
-    "file": "assets/app-CqJJJwyu.css",
+    "file": "assets/app-CbaeKFv6.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "name": "app",
@@ -16,98 +16,98 @@
     ]
   },
   "resources/js/Pages/AdminCancha/Dashboard.vue": {
-    "file": "assets/Dashboard-BonKDesw.js",
+    "file": "assets/Dashboard-DBIPdlAL.js",
     "name": "Dashboard",
     "src": "resources/js/Pages/AdminCancha/Dashboard.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.ts",
-      "_AppShell.vue_vue_type_script_setup_true_lang-BPq4C9eb.js"
+      "_AppShell.vue_vue_type_script_setup_true_lang-lkMDjd69.js"
     ],
     "css": [
-      "assets/app-CqJJJwyu.css"
+      "assets/app-CbaeKFv6.css"
     ]
   },
   "resources/js/Pages/Auth/Login.vue": {
-    "file": "assets/Login-D125q7TC.js",
+    "file": "assets/Login-DLeWCYRB.js",
     "name": "Login",
     "src": "resources/js/Pages/Auth/Login.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.ts",
-      "_AppShell.vue_vue_type_script_setup_true_lang-BPq4C9eb.js"
+      "_AppShell.vue_vue_type_script_setup_true_lang-lkMDjd69.js"
     ],
     "css": [
-      "assets/app-CqJJJwyu.css"
+      "assets/app-CbaeKFv6.css"
     ]
   },
   "resources/js/Pages/Auth/Register.vue": {
-    "file": "assets/Register-Bk-53Hh9.js",
+    "file": "assets/Register-B63xLk18.js",
     "name": "Register",
     "src": "resources/js/Pages/Auth/Register.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.ts",
-      "_AppShell.vue_vue_type_script_setup_true_lang-BPq4C9eb.js"
+      "_AppShell.vue_vue_type_script_setup_true_lang-lkMDjd69.js"
     ],
     "css": [
-      "assets/app-CqJJJwyu.css"
+      "assets/app-CbaeKFv6.css"
     ]
   },
   "resources/js/Pages/Client/Dashboard.vue": {
-    "file": "assets/Dashboard-DAXE8a5W.js",
+    "file": "assets/Dashboard-BAURtcqy.js",
     "name": "Dashboard",
     "src": "resources/js/Pages/Client/Dashboard.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.ts",
-      "_AppShell.vue_vue_type_script_setup_true_lang-BPq4C9eb.js"
+      "_AppShell.vue_vue_type_script_setup_true_lang-lkMDjd69.js"
     ],
     "css": [
-      "assets/app-CqJJJwyu.css"
+      "assets/app-CbaeKFv6.css"
     ]
   },
   "resources/js/Pages/Complex/Show.vue": {
-    "file": "assets/Show-BPpcGurQ.js",
+    "file": "assets/Show-BdQHgYDh.js",
     "name": "Show",
     "src": "resources/js/Pages/Complex/Show.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.ts",
-      "_AppShell.vue_vue_type_script_setup_true_lang-BPq4C9eb.js"
+      "_AppShell.vue_vue_type_script_setup_true_lang-lkMDjd69.js"
     ],
     "css": [
-      "assets/app-CqJJJwyu.css"
+      "assets/app-CbaeKFv6.css"
     ]
   },
   "resources/js/Pages/Home.vue": {
-    "file": "assets/Home-DBoNveVP.js",
+    "file": "assets/Home-DE4YsJa3.js",
     "name": "Home",
     "src": "resources/js/Pages/Home.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.ts",
-      "_AppShell.vue_vue_type_script_setup_true_lang-BPq4C9eb.js"
+      "_AppShell.vue_vue_type_script_setup_true_lang-lkMDjd69.js"
     ],
     "css": [
-      "assets/app-CqJJJwyu.css"
+      "assets/app-CbaeKFv6.css"
     ]
   },
   "resources/js/Pages/SuperAdmin/Dashboard.vue": {
-    "file": "assets/Dashboard-BVmM9k1B.js",
+    "file": "assets/Dashboard-ChMHp9z_.js",
     "name": "Dashboard",
     "src": "resources/js/Pages/SuperAdmin/Dashboard.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.ts",
-      "_AppShell.vue_vue_type_script_setup_true_lang-BPq4C9eb.js"
+      "_AppShell.vue_vue_type_script_setup_true_lang-lkMDjd69.js"
     ],
     "css": [
-      "assets/app-CqJJJwyu.css"
+      "assets/app-CbaeKFv6.css"
     ]
   },
   "resources/js/app.ts": {
-    "file": "assets/app-C8__nQ1S.js",
+    "file": "assets/app-SXIMYtGh.js",
     "name": "app",
     "src": "resources/js/app.ts",
     "isEntry": true,
@@ -121,7 +121,7 @@
       "resources/js/Pages/SuperAdmin/Dashboard.vue"
     ],
     "css": [
-      "assets/app-CqJJJwyu.css"
+      "assets/app-CbaeKFv6.css"
     ]
   }
 }

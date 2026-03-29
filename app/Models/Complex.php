@@ -102,4 +102,9 @@ class Complex extends Model
   {
     return $this->hasMany(RecurringReservation::class);
   }
+
+  public function sports(): BelongsToMany
+  {
+    return $this->belongsToMany(Sport::class, 'courts', 'complex_id', 'sport_id')->distinct();
+  }
 }

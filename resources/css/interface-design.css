@@ -10,7 +10,7 @@
 
     /* Colors (Precision & Density) */
     --color-foreground: #0b1220;
-    --color-muted: #6b7280;
+    --color-muted: #374151; /* darker for better legibility */
     --color-background: #f8fafc;
     --color-surface: #ffffff;
     --color-accent: #1d4ed8; /* stronger, better contrast */
@@ -29,8 +29,8 @@
     --h1-line: 36px;
     --h2-size: 20px;
     --h2-line: 28px;
-    --body-size: 14px;
-    --body-line: 20px;
+    --body-size: 16px;
+    --body-line: 24px;
 
     /* Elevation / Borders */
     --border-default: rgba(15, 23, 42, 0.06);
@@ -40,7 +40,7 @@
 /* Dark mode overrides */
 .dark {
     --color-foreground: #f3f4f6;
-    --color-muted: #9ca3af;
+    --color-muted: #cbd5e1; /* slightly stronger in dark mode */
     --color-background: #071021;
     --color-surface: #0b1220;
     --color-accent: #60a5fa;

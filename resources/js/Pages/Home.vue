@@ -89,6 +89,13 @@ const searchForm = useForm({
     start_time: props.filters.start_time ?? defaultStartTime,
 });
 
+const isPastDateTime = computed(() => {
+    if (!searchForm.date || !searchForm.start_time) return false;
+    
+    const selected = new Date(`${searchForm.date}T${searchForm.start_time}`);
+    return selected < new Date();
+});
+
 const reserveForm = useForm({
     court_id: "",
     date: props.filters.date ?? defaultDate,
@@ -105,6 +112,10 @@ const selectedProvince = computed(() =>
 const cityOptions = computed(() => selectedProvince.value?.cities ?? []);
 
 function submitSearch(): void {
+    if (isPastDateTime.value) {
+        alert("No puedes buscar turnos en el pasado. Elige una fecha u hora futura.");
+        return;
+    }
     router.get("/", searchForm.data(), {
         preserveState: true,
         replace: true,
@@ -240,6 +251,7 @@ function complexProfileHref(group: AvailabilityGroup): string {
                     v-model="searchForm.date"
                     type="date"
                     required
+                    :min="defaultDate"
                     class="form-field"
                 />
                 <div class="flex gap-2">
