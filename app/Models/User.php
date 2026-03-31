@@ -102,4 +102,9 @@ class User extends Authenticatable
     {
         return $this->role === self::ROLE_CLIENTE;
     }
+
+    public function rankings(): HasMany
+    {
+        return $this->hasMany(UserRanking::class);
+    }
 }

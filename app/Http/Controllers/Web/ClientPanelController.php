@@ -109,4 +109,33 @@ class ClientPanelController extends Controller
     return redirect()->route('panel.cliente')
       ->with('success', 'Pago aprobado en modo demo. Reserva confirmada.');
   }
+
+  public function updateProfile(Request $request): RedirectResponse
+  {
+    $user = $request->user();
+
+    $validated = $request->validate([
+      'avatar' => ['nullable', 'image', 'max:2048'],
+      'phone' => ['nullable', 'string', 'max:30'],
+      'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+    ]);
+
+    if ($request->hasFile('avatar')) {
+      $path = $request->file('avatar')->store('avatars', 'public');
+      $user->avatar = $path;
+    }
+
+    if (!empty($validated['password'])) {
+      $user->password = bcrypt($validated['password']);
+    }
+
+    if (array_key_exists('phone', $validated)) {
+      $user->phone = $validated['phone'];
+    }
+
+    $user->save();
+
+    return redirect()->route('panel.cliente')
+      ->with('success', 'Perfil actualizado correctamente.');
+  }
 }

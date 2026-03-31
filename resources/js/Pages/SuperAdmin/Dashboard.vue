@@ -308,27 +308,27 @@ function formatMoney(value: number): string {
                     <input
                         v-model="adminForm.name"
                         placeholder="Nombre"
-                        class="rounded-md border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-slate-50 dark:bg-slate-950 transition-colors duration-300 px-3 py-2 text-sm"
+                        class="rounded-md border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-sm"
                         required
                     />
                     <input
                         v-model="adminForm.email"
                         placeholder="Email"
                         type="email"
-                        class="rounded-md border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-slate-50 dark:bg-slate-950 transition-colors duration-300 px-3 py-2 text-sm"
+                        class="rounded-md border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-sm"
                         required
                     />
                     <input
                         v-model="adminForm.password"
                         placeholder="Contrasena"
                         type="password"
-                        class="rounded-md border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-slate-50 dark:bg-slate-950 transition-colors duration-300 px-3 py-2 text-sm"
+                        class="rounded-md border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-sm"
                         required
                     />
                     <input
                         v-model="adminForm.phone"
                         placeholder="Telefono"
-                        class="rounded-md border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-slate-50 dark:bg-slate-950 transition-colors duration-300 px-3 py-2 text-sm"
+                        class="rounded-md border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-sm"
                     />
                     <button
                         class="rounded-md bg-emerald-400 px-4 py-2 text-sm font-bold text-slate-950"
@@ -344,21 +344,21 @@ function formatMoney(value: number): string {
                     <input
                         v-model="clientForm.name"
                         placeholder="Nombre"
-                        class="rounded-md border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-slate-50 dark:bg-slate-950 transition-colors duration-300 px-3 py-2 text-sm"
+                        class="rounded-md border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-sm"
                         required
                     />
                     <input
                         v-model="clientForm.email"
                         placeholder="Email"
                         type="email"
-                        class="rounded-md border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-slate-50 dark:bg-slate-950 transition-colors duration-300 px-3 py-2 text-sm"
+                        class="rounded-md border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-sm"
                         required
                     />
                     <input
                         v-model="clientForm.password"
                         placeholder="Contrasena"
                         type="password"
-                        class="rounded-md border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-slate-50 dark:bg-slate-950 transition-colors duration-300 px-3 py-2 text-sm"
+                        class="rounded-md border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-sm"
                         required
                     />
                     <input
@@ -383,7 +383,7 @@ function formatMoney(value: number): string {
                 <div
                     v-for="admin in props.admins"
                     :key="admin.id"
-                    class="rounded-xl border border-slate-200 dark:border-slate-800 transition-colors duration-300 bg-slate-50/70 dark:bg-slate-950/70 transition-colors duration-300 p-4"
+                    class="rounded-xl border border-slate-200 dark:border-slate-800 transition-colors duration-300 bg-slate-50/70 dark:bg-slate-950/70 p-4"
                 >
                     <div class="flex items-center justify-between">
                         <p class="font-semibold">
@@ -401,7 +401,7 @@ function formatMoney(value: number): string {
                     <div class="mt-2 flex flex-wrap items-center gap-2">
                         <select
                             v-model="assignmentByAdmin[admin.id].complex_id"
-                            class="rounded-md border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-white dark:bg-slate-900 transition-colors duration-300 px-3 py-2 text-sm"
+                            class="rounded-md border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
                         >
                             <option value="">Seleccionar complejo</option>
                             <option
@@ -416,7 +416,7 @@ function formatMoney(value: number): string {
                             v-model="
                                 assignmentByAdmin[admin.id].assignment_type
                             "
-                            class="rounded-md border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-white dark:bg-slate-900 transition-colors duration-300 px-3 py-2 text-sm"
+                            class="rounded-md border border-slate-300 dark:border-slate-700 transition-colors duration-300 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
                         >
                             <option value="owner">Owner</option>
                             <option value="manager">Manager</option>

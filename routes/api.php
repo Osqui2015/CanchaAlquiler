@@ -4,6 +4,9 @@ use App\Http\Controllers\Api\Admin\AdminComplexController;
 use App\Http\Controllers\Api\Admin\AdminCourtController;
 use App\Http\Controllers\Api\AvailabilitySearchController;
 use App\Http\Controllers\Api\CatalogController;
+use App\Http\Controllers\Api\ModalitiesController;
+use App\Http\Controllers\Api\RankingController;
+use App\Http\Controllers\Api\TeamHistoryController;
 use App\Http\Controllers\Api\ClientReservationController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\SuperAdmin\SuperAdminController;
@@ -11,6 +14,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/catalog', CatalogController::class);
 Route::get('/availability', AvailabilitySearchController::class);
+Route::get('/sports/{sport}/modalities', [ModalitiesController::class, 'index']);
+Route::get('/rankings', [RankingController::class, 'index']);
+Route::get('/teams/{team}/history', [TeamHistoryController::class, 'show']);
 Route::post('/payments/webhook', [PaymentController::class, 'webhook']);
 
 Route::middleware(['web', 'auth', 'role:cliente,admin_cancha,super_admin'])->group(function (): void {
@@ -18,6 +24,10 @@ Route::middleware(['web', 'auth', 'role:cliente,admin_cancha,super_admin'])->gro
   Route::post('/client/reservations', [ClientReservationController::class, 'store']);
   Route::post('/client/reservations/{reservation}/cancel', [ClientReservationController::class, 'cancel']);
   Route::post('/client/reservations/{reservation}/checkout', [PaymentController::class, 'startCheckout']);
+
+  // Client favorites
+  Route::get('/client/favorites', [\App\Http\Controllers\Api\ClientFavoritesController::class, 'index']);
+  Route::post('/client/favorites', [\App\Http\Controllers\Api\ClientFavoritesController::class, 'toggle']);
 });
 
 Route::prefix('admin')

@@ -37,4 +37,9 @@ class Sport extends Model
   {
     return $this->hasMany(ComplexTeamBoardPost::class);
   }
+
+  public function userRankings(): HasMany
+  {
+    return $this->hasMany(UserRanking::class);
+  }
 }

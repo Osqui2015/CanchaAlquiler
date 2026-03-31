@@ -19,6 +19,9 @@ class DatabaseSeeder extends Seeder
         $this->call(DemoFootballSeeder::class);
         $this->call(GalponSeeder::class);
 
+        // Padel sample players + rankings
+        $this->call(PadelPlayersSeeder::class);
+
         User::query()->updateOrCreate(
             ['email' => 'test@example.com'],
             [

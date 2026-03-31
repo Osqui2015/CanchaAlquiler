@@ -27,6 +27,7 @@ class Reservation extends Model
     'complex_id',
     'court_id',
     'sport_id',
+    'modalidad',
     'start_at',
     'end_at',
     'total_amount',

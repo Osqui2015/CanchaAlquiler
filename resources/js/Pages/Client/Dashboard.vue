@@ -2,9 +2,9 @@
 import { ref } from "vue";
 import { useForm } from "@inertiajs/vue3";
 import AppShell from "@/Components/AppShell.vue";
-import ClientProfile from './parts/ClientProfile.vue';
-import ClientRanking from './parts/ClientRanking.vue';
-import ClientFavorites from './parts/ClientFavorites.vue';
+import ClientProfile from "./parts/ClientProfile.vue";
+import ClientRanking from "./parts/ClientRanking.vue";
+import ClientFavorites from "./parts/ClientFavorites.vue";
 
 type Payment = {
     id: number;
@@ -85,12 +85,14 @@ const props = defineProps<{
 }>();
 
 // ─── UI: tabs for client panel
-import { ref as vueRef } from 'vue';
-const activeTab = vueRef<'reservas' | 'config' | 'ranking' | 'favoritos'>('reservas');
+import { ref as vueRef } from "vue";
+const activeTab = vueRef<"reservas" | "config" | "ranking" | "favoritos">(
+    "reservas",
+);
 
 // helper to get current auth user id from Inertia shared props
-import { usePage } from '@inertiajs/vue3';
-const page = usePage();
+import { usePage } from "@inertiajs/vue3";
+const page = usePage<any>();
 const currentUserId = page.props.value?.auth?.user?.id ?? null;
 
 // ─── Forms por reserva (evita estado compartido en el loop) ──────────────────
@@ -108,7 +110,8 @@ const approveForms: FormMap = new Map(
 
 function getForm(map: FormMap, id: number) {
     const form = map.get(id);
-    if (!form) throw new Error(`[Dashboard] No form found for reservation id=${id}`);
+    if (!form)
+        throw new Error(`[Dashboard] No form found for reservation id=${id}`);
     return form;
 }
 
@@ -184,16 +187,56 @@ function statusText(status: Reservation["status"]): string {
         <section class="mt-6 space-y-4">
             <!-- Tabs -->
             <div class="flex items-center gap-2">
-                <button :class="['px-3 py-2 rounded font-bold', activeTab==='reservas' ? 'bg-emerald-500 text-white' : 'bg-white']" @click.prevent="activeTab='reservas'">Reservas</button>
-                <button :class="['px-3 py-2 rounded font-bold', activeTab==='config' ? 'bg-emerald-500 text-white' : 'bg-white']" @click.prevent="activeTab='config'">Configuraciones</button>
-                <button :class="['px-3 py-2 rounded font-bold', activeTab==='ranking' ? 'bg-emerald-500 text-white' : 'bg-white']" @click.prevent="activeTab='ranking'">Ranking</button>
-                <button :class="['px-3 py-2 rounded font-bold', activeTab==='favoritos' ? 'bg-emerald-500 text-white' : 'bg-white']" @click.prevent="activeTab='favoritos'">Favoritos</button>
+                <button
+                    :class="[
+                        'px-3 py-2 rounded font-bold',
+                        activeTab === 'reservas'
+                            ? 'bg-emerald-500 text-white'
+                            : 'bg-white',
+                    ]"
+                    @click.prevent="activeTab = 'reservas'"
+                >
+                    Reservas
+                </button>
+                <button
+                    :class="[
+                        'px-3 py-2 rounded font-bold',
+                        activeTab === 'config'
+                            ? 'bg-emerald-500 text-white'
+                            : 'bg-white',
+                    ]"
+                    @click.prevent="activeTab = 'config'"
+                >
+                    Configuraciones
+                </button>
+                <button
+                    :class="[
+                        'px-3 py-2 rounded font-bold',
+                        activeTab === 'ranking'
+                            ? 'bg-emerald-500 text-white'
+                            : 'bg-white',
+                    ]"
+                    @click.prevent="activeTab = 'ranking'"
+                >
+                    Ranking
+                </button>
+                <button
+                    :class="[
+                        'px-3 py-2 rounded font-bold',
+                        activeTab === 'favoritos'
+                            ? 'bg-emerald-500 text-white'
+                            : 'bg-white',
+                    ]"
+                    @click.prevent="activeTab = 'favoritos'"
+                >
+                    Favoritos
+                </button>
             </div>
 
             <div class="mt-4">
-                <ClientProfile v-if="activeTab==='config'" />
-                <ClientRanking v-else-if="activeTab==='ranking'" />
-                <ClientFavorites v-else-if="activeTab==='favoritos'" />
+                <ClientProfile v-if="activeTab === 'config'" />
+                <ClientRanking v-else-if="activeTab === 'ranking'" />
+                <ClientFavorites v-else-if="activeTab === 'favoritos'" />
 
                 <template v-else>
                     <article
@@ -201,101 +244,116 @@ function statusText(status: Reservation["status"]): string {
                         :key="reservation.id"
                         class="card card--muted"
                     >
-                <div class="flex flex-wrap items-start justify-between gap-3">
-                    <div>
-                        <h2
-                            class="text-lg font-bold text-emerald-600 dark:text-emerald-200 transition-colors duration-300"
+                        <div
+                            class="flex flex-wrap items-start justify-between gap-3"
                         >
-                            {{ reservation.code }}
-                        </h2>
-                        <p
-                            class="text-sm text-slate-600 dark:text-slate-300 transition-colors duration-300"
+                            <div>
+                                <h2
+                                    class="text-lg font-bold text-emerald-600 dark:text-emerald-200 transition-colors duration-300"
+                                >
+                                    {{ reservation.code }}
+                                </h2>
+                                <p
+                                    class="text-sm text-slate-600 dark:text-slate-300 transition-colors duration-300"
+                                >
+                                    {{ reservation.complex.name }} ·
+                                    {{ reservation.court.name }} ({{
+                                        reservation.court.sport.name
+                                    }})
+                                </p>
+                                <p
+                                    class="text-xs text-slate-500 dark:text-slate-400 transition-colors duration-300"
+                                >
+                                    {{ formatDate(reservation.start_at) }} →
+                                    {{ formatDate(reservation.end_at) }}
+                                </p>
+                            </div>
+                            <span
+                                class="rounded-md border px-3 py-1 text-xs font-semibold"
+                                :class="statusClass(reservation.status)"
+                            >
+                                {{ statusText(reservation.status) }}
+                            </span>
+                        </div>
+
+                        <div
+                            class="mt-3 text-sm text-slate-600 dark:text-slate-300 transition-colors duration-300"
                         >
-                            {{ reservation.complex.name }} ·
-                            {{ reservation.court.name }} ({{
-                                reservation.court.sport.name
-                            }})
-                        </p>
-                        <p
-                            class="text-xs text-slate-500 dark:text-slate-400 transition-colors duration-300"
+                            Total: {{ formatMoney(reservation.total_amount) }} ·
+                            Seña:
+                            {{ formatMoney(reservation.deposit_amount) }}
+                        </div>
+
+                        <div
+                            v-if="lastPayment(reservation)"
+                            class="mt-2 text-xs text-slate-500 dark:text-slate-400 transition-colors duration-300"
                         >
-                            {{ formatDate(reservation.start_at) }} →
-                            {{ formatDate(reservation.end_at) }}
-                        </p>
-                    </div>
-                    <span
-                        class="rounded-md border px-3 py-1 text-xs font-semibold"
-                        :class="statusClass(reservation.status)"
-                    >
-                        {{ statusText(reservation.status) }}
-                    </span>
-                </div>
+                            Último pago:
+                            {{ lastPayment(reservation)?.provider_payment_id }}
+                            ({{ lastPayment(reservation)?.status }})
+                        </div>
 
-                <div
-                    class="mt-3 text-sm text-slate-600 dark:text-slate-300 transition-colors duration-300"
-                >
-                    Total: {{ formatMoney(reservation.total_amount) }} · Seña:
-                    {{ formatMoney(reservation.deposit_amount) }}
-                </div>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <button
+                                v-if="reservation.status === 'pendiente_pago'"
+                                type="button"
+                                :disabled="
+                                    getForm(checkoutForms, reservation.id)
+                                        .processing
+                                "
+                                class="rounded-lg bg-sky-400 px-4 py-2 text-xs font-bold text-slate-950 hover:bg-sky-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                @click="startCheckout(reservation.id)"
+                            >
+                                {{
+                                    getForm(checkoutForms, reservation.id)
+                                        .processing
+                                        ? "Procesando..."
+                                        : "Iniciar checkout"
+                                }}
+                            </button>
 
-                <div
-                    v-if="lastPayment(reservation)"
-                    class="mt-2 text-xs text-slate-500 dark:text-slate-400 transition-colors duration-300"
-                >
-                    Último pago: {{ lastPayment(reservation)?.provider_payment_id }}
-                    ({{ lastPayment(reservation)?.status }})
-                </div>
+                            <button
+                                v-if="reservation.status === 'pendiente_pago'"
+                                type="button"
+                                :disabled="
+                                    getForm(approveForms, reservation.id)
+                                        .processing
+                                "
+                                class="rounded-lg border border-emerald-400 px-4 py-2 text-xs font-bold text-emerald-700 dark:text-emerald-200 hover:bg-emerald-400/10 disabled:opacity-50 disabled:cursor-not-allowed"
+                                @click="approveDemo(reservation.id)"
+                            >
+                                {{
+                                    getForm(approveForms, reservation.id)
+                                        .processing
+                                        ? "Aprobando..."
+                                        : "Aprobar seña (demo)"
+                                }}
+                            </button>
 
-                <div class="mt-4 flex flex-wrap gap-2">
-                    <button
-                        v-if="reservation.status === 'pendiente_pago'"
-                        type="button"
-                        :disabled="getForm(checkoutForms, reservation.id).processing"
-                        class="rounded-lg bg-sky-400 px-4 py-2 text-xs font-bold text-slate-950 hover:bg-sky-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                        @click="startCheckout(reservation.id)"
-                    >
-                        {{
-                            getForm(checkoutForms, reservation.id).processing
-                                ? "Procesando..."
-                                : "Iniciar checkout"
-                        }}
-                    </button>
-
-                    <button
-                        v-if="reservation.status === 'pendiente_pago'"
-                        type="button"
-                        :disabled="getForm(approveForms, reservation.id).processing"
-                        class="rounded-lg border border-emerald-400 px-4 py-2 text-xs font-bold text-emerald-700 dark:text-emerald-200 hover:bg-emerald-400/10 disabled:opacity-50 disabled:cursor-not-allowed"
-                        @click="approveDemo(reservation.id)"
-                    >
-                        {{
-                            getForm(approveForms, reservation.id).processing
-                                ? "Aprobando..."
-                                : "Aprobar seña (demo)"
-                        }}
-                    </button>
-
-                    <button
-                        v-if="
-                            reservation.status === 'pendiente_pago' ||
-                            reservation.status === 'confirmada'
-                        "
-                        type="button"
-                        :disabled="getForm(cancelForms, reservation.id).processing"
-                        class="rounded-lg border border-rose-400 px-4 py-2 text-xs font-bold text-rose-600 dark:text-rose-200 hover:bg-rose-400/10 disabled:opacity-50 disabled:cursor-not-allowed"
-                        @click="confirmCancel(reservation)"
-                    >
-                        Cancelar reserva
-                    </button>
-                </div>
+                            <button
+                                v-if="
+                                    reservation.status === 'pendiente_pago' ||
+                                    reservation.status === 'confirmada'
+                                "
+                                type="button"
+                                :disabled="
+                                    getForm(cancelForms, reservation.id)
+                                        .processing
+                                "
+                                class="rounded-lg border border-rose-400 px-4 py-2 text-xs font-bold text-rose-600 dark:text-rose-200 hover:bg-rose-400/10 disabled:opacity-50 disabled:cursor-not-allowed"
+                                @click="confirmCancel(reservation)"
+                            >
+                                Cancelar reserva
+                            </button>
+                        </div>
                     </article>
 
                     <div
                         v-if="props.reservations.length === 0"
                         class="rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-6 text-sm text-slate-600 dark:text-slate-300 transition-colors duration-300"
                     >
-                        Todavía no tenés reservas. Volvé al inicio para buscar turnos
-                        disponibles.
+                        Todavía no tenés reservas. Volvé al inicio para buscar
+                        turnos disponibles.
                     </div>
 
                     <!-- Modal de confirmación de cancelación -->
@@ -325,12 +383,20 @@ function statusText(status: Reservation["status"]): string {
                                 </button>
                                 <button
                                     type="button"
-                                    :disabled="getForm(cancelForms, reservationToCancel!.id).processing"
+                                    :disabled="
+                                        getForm(
+                                            cancelForms,
+                                            reservationToCancel!.id,
+                                        ).processing
+                                    "
                                     class="rounded-lg bg-rose-500 px-4 py-2 text-xs font-bold text-white hover:bg-rose-400 disabled:opacity-50 disabled:cursor-not-allowed"
                                     @click="cancelReservation()"
                                 >
                                     {{
-                                        getForm(cancelForms, reservationToCancel!.id).processing
+                                        getForm(
+                                            cancelForms,
+                                            reservationToCancel!.id,
+                                        ).processing
                                             ? "Cancelando..."
                                             : "Sí, cancelar"
                                     }}
@@ -347,14 +413,22 @@ function statusText(status: Reservation["status"]): string {
             v-if="props.checkout"
             class="mt-6 rounded-xl border border-slate-200 dark:border-slate-700/60 bg-slate-100 dark:bg-slate-800/40 p-4 transition-colors duration-300"
         >
-            <p class="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-2">
+            <p
+                class="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-2"
+            >
                 Detalle del último checkout
             </p>
-            <dl class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-slate-600 dark:text-slate-300">
+            <dl
+                class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-slate-600 dark:text-slate-300"
+            >
                 <dt class="font-medium">ID de pago</dt>
-                <dd class="font-mono">{{ props.checkout.provider_payment_id }}</dd>
+                <dd class="font-mono">
+                    {{ props.checkout.provider_payment_id }}
+                </dd>
                 <dt class="font-medium">Monto</dt>
-                <dd>{{ props.checkout.currency }} {{ props.checkout.amount }}</dd>
+                <dd>
+                    {{ props.checkout.currency }} {{ props.checkout.amount }}
+                </dd>
                 <dt class="font-medium">URL checkout</dt>
                 <dd class="truncate">{{ props.checkout.checkout_url }}</dd>
             </dl>

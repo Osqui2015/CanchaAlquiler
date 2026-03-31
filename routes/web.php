@@ -56,6 +56,9 @@ Route::middleware('auth')->group(function (): void {
         ->middleware('role:cliente')
         ->name('panel.cliente.reservas.checkout.approve-demo');
 
+    Route::put('/panel/cliente/profile', [ClientPanelController::class, 'updateProfile'])
+        ->middleware('role:cliente')
+        ->name('panel.cliente.profile.update');
     Route::get('/panel/admin-cancha', [AdminCanchaPanelController::class, 'index'])
         ->middleware('role:admin_cancha')
         ->name('panel.admincancha');
@@ -103,7 +106,7 @@ Route::middleware('auth')->group(function (): void {
     Route::post('/panel/admin-cancha/complejos/{complex}/reservas/{reservation}/cancelar', [AdminCanchaPanelController::class, 'cancelReservation'])
         ->middleware('role:admin_cancha')
         ->name('panel.admincancha.reservas.cancelar');
-        
+
     Route::put('/panel/admin-cancha/complejos/{complex}/reservas/{reservation}', [AdminCanchaPanelController::class, 'updateReservation'])
         ->middleware('role:admin_cancha')
         ->name('panel.admincancha.reservas.update');
@@ -124,14 +127,19 @@ Route::middleware('auth')->group(function (): void {
         ->middleware('role:admin_cancha')
         ->name('panel.admincancha.reportes');
 
+    // Rankings endpoint (proxying API controller) for admin panel
+    Route::get('/panel/admin-cancha/rankings', [\App\Http\Controllers\Api\RankingController::class, 'index'])
+        ->middleware('role:admin_cancha')
+        ->name('panel.admincancha.rankings');
+
     Route::get('/panel/admin-cancha/clientes', [\App\Http\Controllers\Web\AdminCanchaClientController::class, 'index'])
         ->middleware('role:admin_cancha')
         ->name('panel.admincancha.clientes.index');
-        
+
     Route::post('/panel/admin-cancha/clientes', [\App\Http\Controllers\Web\AdminCanchaClientController::class, 'store'])
         ->middleware('role:admin_cancha')
         ->name('panel.admincancha.clientes.store');
-        
+
     Route::put('/panel/admin-cancha/clientes/{client}', [\App\Http\Controllers\Web\AdminCanchaClientController::class, 'update'])
         ->middleware('role:admin_cancha')
         ->name('panel.admincancha.clientes.update');

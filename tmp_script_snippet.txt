@@ -1,0 +1,40 @@
+    matches_played: 0,
+    matches_lost: 0,
+    podiums_first: 0,
+    podiums_second: 0,
+    podiums_third: 0,
+    team_name: null,
+    member_names: null
+  });
+}
+
+function removeRankingEntry(index: number) {
+  clientForm.rankings.splice(index, 1);
+}
+
+function editClientFromRanking(userId: number) {
+  const client = clients.value.find(c => c.id === userId);
+  if (client) {
+    editClient(client);
+  }
+}
+
+function saveClient() {
+  if (clientForm.id) {
+    clientForm.put(`/panel/admin-cancha/clientes/${clientForm.id}`, {
+      onSuccess: () => {
+        showClientFormModal.value = false;
+        loadClients();
+      },
+    });
+  } else {
+    clientForm.post(`/panel/admin-cancha/clientes`, {
+      onSuccess: () => {
+        showClientFormModal.value = false;
+        loadClients();
+      },
+    });
+  }
+}
+
+function disableClient(c: any) {
